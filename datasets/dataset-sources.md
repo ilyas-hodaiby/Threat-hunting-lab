@@ -34,7 +34,6 @@ git clone https://github.com/OTRF/Security-Datasets
 **Use:** Hunt 05 (C2 Detection)  
 **How to use:** Download individual PCAP files from the website
 
-``
 ## 5. Zeek Logs
 **Source:** https://zeek.org/get-zeek/  
 **Type:** Network metadata logs  
