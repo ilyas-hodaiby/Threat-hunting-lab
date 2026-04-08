@@ -9,3 +9,19 @@
 # Download and import into Splunk
 # Follow instructions at github.com/splunk/botsv1
 ```
+## 2. EVTX Attack Samples
+**Source:** https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES  
+**Type:** Windows Event Logs (.evtx)  
+**Use:** Hunt 02 (Persistence), Hunt 03 (Credential Access)  
+**How to use:**
+```bash
+git clone https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES
+```
+
+## 3. OTRF Security Datasets
+**Source:** https://github.com/OTRF/Security-Datasets  
+**Type:** Endpoint and network telemetry  
+**Use:** Hunt 04 (Exfiltration), Hunt 05 (C2)  
+**How to use:**
+```bash
+git clone https://github.com/OTRF/Security-Datasets
