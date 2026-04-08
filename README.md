@@ -36,3 +36,13 @@ Each hunt follows this structured approach:
 6. Reporting
    └── Structured hunt report with findings
 ```
+
+---
+
+## 🛠️ Tools & Technologies
+
+| Tool | Purpose |
+|---|---|
+| **Splunk** | Primary SIEM — log search and correlation |
+| **ELK Stack** | Secondary analysis — Elasticsearch + Kibana |
+| **Python** | Automation — IOC enrichment and log parsing |
