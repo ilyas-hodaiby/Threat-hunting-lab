@@ -52,7 +52,18 @@ Each hunt follows this structured approach:
 ---
 
 ## 📂 Repository Structure
+```
+threat-hunting-lab/
+│
+├── README.md
+├── methodology/
+│   └── hunt-methodology.md
+│
+├── datasets/
+│   └── dataset-sources.md
+```
 
+## 🎯 Hunt Scenarios
 
 ## 🎯 Hunt Scenarios
 
