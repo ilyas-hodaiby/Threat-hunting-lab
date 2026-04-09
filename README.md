@@ -46,3 +46,12 @@ Each hunt follows this structured approach:
 | **Splunk** | Primary SIEM — log search and correlation |
 | **ELK Stack** | Secondary analysis — Elasticsearch + Kibana |
 | **Python** | Automation — IOC enrichment and log parsing |
+| **Wireshark** | Network traffic analysis |
+| **MITRE ATT&CK Navigator** | Technique mapping and coverage |
+| **VirusTotal API** | IOC reputation checking |
+---
+
+## 📂 Repository Structure
+
+
+## 🎯 Hunt Scenarios
