@@ -55,3 +55,11 @@ Each hunt follows this structured approach:
 
 
 ## 🎯 Hunt Scenarios
+
+## 🔗 Datasets Used
+
+| Dataset | Source | Type |
+|---|---|---|
+| **BOTS v1 & v2** | Splunk Boss of the SOC | Windows + Network logs |
+| **EVTX Attack Samples** | github.com/sbousseaden | Windows Event Logs |
+| **OTRF Security Datasets** | github.com/OTRF | Endpoint telemetry |
