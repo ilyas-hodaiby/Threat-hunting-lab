@@ -63,3 +63,5 @@ Each hunt follows this structured approach:
 | **BOTS v1 & v2** | Splunk Boss of the SOC | Windows + Network logs |
 | **EVTX Attack Samples** | github.com/sbousseaden | Windows Event Logs |
 | **OTRF Security Datasets** | github.com/OTRF | Endpoint telemetry |
+| **Malware Traffic Analysis** | malware-traffic-analysis.net | PCAP files |
+| **Zeek Logs** | zeek.org | Network metadata |
