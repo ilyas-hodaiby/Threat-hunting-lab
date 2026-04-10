@@ -18,7 +18,7 @@ Each hunt follows this structured approach:
 
 ```
 1. Hypothesis Formation
-   └── Based on threat intelligence or MITRE ATT&CK technique
+   └── Based on MITRE ATT&CK technique or threat intelligence
 
 2. Data Collection
    └── Identify relevant log sources and datasets
