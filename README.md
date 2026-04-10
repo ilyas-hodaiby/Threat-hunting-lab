@@ -61,11 +61,43 @@ threat-hunting-lab/
 │
 ├── datasets/
 │   └── dataset-sources.md
+│
+├── hunts/
+│   ├── hunt-01-lateral-movement/
+│   │   ├── README.md
+│   │   ├── hypothesis.md
+│   │   ├── queries.md
+│   │   └── report.md
+│   ├── hunt-02-persistence/
+│   ├── hunt-03-credential-access/
+│   ├── hunt-04-exfiltration/
+│   └── hunt-05-c2-detection/
+│
+├── automation/
+│   ├── ioc_enricher.py
+│   ├── log_parser.py
+│   ├── hunt_report_generator.py
+│   └── requirements.txt
+│
+├── splunk-queries/
+│   └── hunting-queries-library.md
+│
+├── mitre-mapping/
+│   └── coverage-map.md
+│
+└── reports/
+    └── hunt-report-template.md
 ```
-
 ## 🎯 Hunt Scenarios
+| Hunt | Technique | MITRE ID | Dataset | Status |
+|---|---|---|---|---|
+| [Lateral Movement Detection](hunts/hunt-01-lateral-movement/) | Pass the Hash / RDP | T1550.002 | BOTS v1 | ✅ Complete |
+| [Persistence via Registry](hunts/hunt-02-persistence/) | Registry Run Keys | T1547.001 | EVTX Attack Samples | ✅ Complete |
+| [Credential Access](hunts/hunt-03-credential-access/) | OS Credential Dumping | T1003 | BOTS v2 | 🔄 In Progress |
+| [Data Exfiltration](hunts/hunt-04-exfiltration/) | Exfil Over C2 | T1041 | Malware Traffic | ⬜ Planned |
+| [C2 Detection](hunts/hunt-05-c2-detection/) | Application Layer Protocol | T1071 | PCAP Analysis | ⬜ Planned |
 
-## 🎯 Hunt Scenarios
+---
 
 ## 🔗 Datasets Used
 
