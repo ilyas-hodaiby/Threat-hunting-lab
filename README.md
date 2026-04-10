@@ -49,6 +49,8 @@ Each hunt follows this structured approach:
 | **Wireshark** | Network traffic analysis |
 | **MITRE ATT&CK Navigator** | Technique mapping and coverage |
 | **VirusTotal API** | IOC reputation checking |
+| **AbuseIPDB API** | IP reputation enrichment |
+| **Any.run** | Sandbox analysis |
 ---
 
 ## 📂 Repository Structure
