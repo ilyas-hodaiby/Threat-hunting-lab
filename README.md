@@ -110,3 +110,7 @@ threat-hunting-lab/
 | **OTRF Security Datasets** | github.com/OTRF | Endpoint telemetry |
 | **Malware Traffic Analysis** | malware-traffic-analysis.net | PCAP files |
 | **Zeek Logs** | zeek.org | Network metadata |
+
+---
+
+## 🤖 Automation Scripts
