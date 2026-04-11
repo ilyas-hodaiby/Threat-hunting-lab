@@ -89,37 +89,14 @@ Each hunt follows this structured approach:
 threat-hunting-lab/
 │
 ├── README.md
-├── methodology/
-│   └── hunt-methodology.md
 │
-├── datasets/
-│   └── dataset-sources.md
-│
-├── hunts/
+├── module-1-threat-hunting/
+│   ├── README.md
 │   ├── hunt-01-lateral-movement/
-│   │   ├── README.md
-│   │   ├── hypothesis.md
-│   │   ├── queries.md
-│   │   └── report.md
 │   ├── hunt-02-persistence/
 │   ├── hunt-03-credential-access/
 │   ├── hunt-04-exfiltration/
 │   └── hunt-05-c2-detection/
-│
-├── automation/
-│   ├── ioc_enricher.py
-│   ├── log_parser.py
-│   ├── hunt_report_generator.py
-│   └── requirements.txt
-│
-├── splunk-queries/
-│   └── hunting-queries-library.md
-│
-├── mitre-mapping/
-│   └── coverage-map.md
-│
-└── reports/
-    └── hunt-report-template.md
 ```
 ## 🎯 Hunt Scenarios
 | Hunt | Technique | MITRE ID | Dataset | Status |
