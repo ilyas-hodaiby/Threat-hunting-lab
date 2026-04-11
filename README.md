@@ -6,9 +6,14 @@
 
 ## 📌 Overview
 
-This project documents structured threat hunting investigations against real-world attack datasets. Each hunt follows a hypothesis-driven methodology aligned with MITRE ATT&CK, combining the detection engineering skills developed during my time as a Junior SOC Analyst with advanced data analysis techniques from my MSc studies.
+This project documents a complete SOC pipeline from threat hunting through to incident response :
 
-The goal is to simulate how a real threat hunter operates — not just responding to alerts, but proactively searching for hidden adversary behaviour across endpoint and network telemetry.
+- **Threat Hunting** — 5 hypothesis-driven investigations against real datasets
+- **SOAR Automation** — ElastAlert → TheHive → Cortex automated workflow
+- **Digital Forensics** — Memory and endpoint artefact analysis
+- **Malware Analysis** — Static and dynamic analysis with YARA rules
+- **Threat Intelligence** — IOC correlation and threat actor profiling
+- **Incident Response** — Full IR lifecycle with formal reporting
 
 ---
 
