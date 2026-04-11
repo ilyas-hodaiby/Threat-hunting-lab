@@ -16,6 +16,32 @@ This project documents a complete SOC pipeline from threat hunting through to in
 - **Incident Response** — Full IR lifecycle with formal reporting
 
 ---
+## 🏗️ Lab Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    LAB ENVIRONMENT                       │
+│                                                         │
+│  ┌──────────┐  attack  ┌──────────────────────────┐    │
+│  │  Kali    │─────────►│  Ubuntu 22.04            │    │
+│  │  Linux   │          │  Wazuh Agent             │    │
+│  │          │          │                          │    │
+│  └──────────┘          └────────────┬─────────────┘    │
+│                                     │ logs              │
+│                                     ▼                   │
+│                    ┌────────────────────────────┐       │
+│                    │   Splunk Free (Windows)     │       │
+│                    │   Log analysis + Hunting    │       │
+│                    └──────────────┬─────────────┘       │
+│                                   │ alert               │
+│                                   ▼                     │
+│              ┌────────────────────────────────────┐     │
+│              │  SOAR Pipeline                      │     │
+│              │  ElastAlert → TheHive → Cortex      │     │
+│              └────────────────────────────────────┘     │
+└─────────────────────────────────────────────────────────┘
+```
+
 
 ## 🧠 Methodology
 
