@@ -1,1 +1,12 @@
+# Hunt 01 — Lateral Movement Detection
 
+**MITRE ATT&CK:** T1550.002 — Pass the Hash  
+**Dataset:** BOTS v1 (Splunk Boss of the SOC)  
+**Analyst:** Ilyas Hodaiby  
+**Status:**   
+
+---
+
+## Hypothesis
+
+> An attacker who has compromised an initial endpoint will attempt lateral movement using stolen NTLM hashes to authenticate to other systems without knowing the plaintext password. This behaviour leaves specific patterns in Windows Security Event Logs — particularly EventCode 4624 with LogonType 3 from unusual source IPs.
