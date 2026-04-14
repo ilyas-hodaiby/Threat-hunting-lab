@@ -41,3 +41,8 @@ index=botsv1 EventCode=4624
 - LogonType 10 (Remote Interactive) = RDP sessions
 - LogonType 3 (Network) = should only come from known servers
 
+---
+
+### Step 2 — Hunt for Anomalous Network Logons
+
+```splunk
