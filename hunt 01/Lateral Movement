@@ -35,3 +35,9 @@ index=botsv1 EventCode=4624
 | stats count by LogonType, src_ip 
 | sort - count
 ```
+
+**Findings:**
+- LogonType 2 (Interactive) = normal user logins at workstations
+- LogonType 10 (Remote Interactive) = RDP sessions
+- LogonType 3 (Network) = should only come from known servers
+
