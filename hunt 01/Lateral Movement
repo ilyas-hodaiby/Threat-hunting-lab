@@ -31,3 +31,7 @@
 First I established what normal authentication looks like in this environment:
 
 ```splunk
+index=botsv1 EventCode=4624 
+| stats count by LogonType, src_ip 
+| sort - count
+```
