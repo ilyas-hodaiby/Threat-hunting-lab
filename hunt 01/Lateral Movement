@@ -58,3 +58,16 @@ index=botsv1 EventCode=4624 LogonType=3
 - Username used: `SYSTEM` and `Administrator`
 
 ---
+### Step 3 — Correlate with Failed Authentications
+
+```splunk
+index=botsv1 EventCode=4625 
+| stats count by src_ip, dest, user
+| sort - count
+```
+
+**Findings:**
+- Same source IP `192.168.250.100` had 23 failed attempts before successful LogonType 3
+- Pattern consistent with automated credential testing (Pass the Hash toolkit)
+
+---
