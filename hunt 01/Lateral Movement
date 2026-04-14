@@ -46,3 +46,15 @@ index=botsv1 EventCode=4624
 ### Step 2 — Hunt for Anomalous Network Logons
 
 ```splunk
+index=botsv1 EventCode=4624 LogonType=3
+| stats count by src_ip, dest, user 
+| where count > 3
+| sort - count
+```
+
+**Findings:**
+- Source IP `192.168.250.100` authenticated to 7 different hosts using LogonType 3
+- All authentications occurred within a 12-minute window
+- Username used: `SYSTEM` and `Administrator`
+
+---
