@@ -71,3 +71,16 @@ index=botsv1 EventCode=4625
 - Pattern consistent with automated credential testing (Pass the Hash toolkit)
 
 ---
+### Step 4 — Check for Service Installation Post-Compromise
+
+```splunk
+index=botsv1 EventCode=7045
+| table _time, ComputerName, ServiceName, ServiceFileName
+| sort - _time
+```
+
+**Findings:**
+- New service `PSEXESVC` installed on 3 hosts within minutes of successful lateral movement
+- Confirms PsExec-based lateral movement technique
+
+---
