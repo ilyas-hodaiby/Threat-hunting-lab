@@ -84,3 +84,17 @@ index=botsv1 EventCode=7045
 - Confirms PsExec-based lateral movement technique
 
 ---
+### Step 5 — Network Traffic Correlation
+
+```splunk
+index=botsv1 sourcetype=stream:smb 
+  src_ip="192.168.250.100"
+| stats count by dest_ip, path
+| sort - count
+```
+
+**Findings:**
+- High volume SMB traffic from attacker IP to multiple destinations
+- Access to `ADMIN$` share on multiple hosts — confirms PsExec lateral movement
+
+---
