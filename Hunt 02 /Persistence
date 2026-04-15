@@ -76,3 +76,20 @@ index=* (EventCode=4698 OR EventCode=4702)
 - Action: Execute `C:\Users\Public\beacon.dll`
 
 ---
+### Step 4 — Hunt for New Services
+
+```splunk
+index=* EventCode=7045
+| table _time, ComputerName, ServiceName, 
+        ServiceFileName, ServiceType
+| sort - _time
+```
+
+**Findings:**
+- New service `WinUpdateHelper` installed
+- Service binary: `C:\Temp\update.exe` — suspicious path
+- Service type: Own process
+- Start type: Automatic — survives reboot
+
+---
+
