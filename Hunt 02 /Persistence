@@ -93,3 +93,15 @@ index=* EventCode=7045
 
 ---
 
+## IOCs Extracted
+
+| Type | Value | Context |
+|---|---|---|
+| Registry Key | HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\WindowsUpdate32 | Persistence |
+| Malicious Binary | C:\Users\Public\svchost32.exe | Fake svchost |
+| Scheduled Task | \Microsoft\Windows\kd8j2h | Auto-execution |
+| Service | WinUpdateHelper | Persistence service |
+| Service Binary | C:\Temp\update.exe | Malicious dropper |
+| EventCode | 4657 | Registry modification |
+| EventCode | 4698 | Scheduled task creation |
+| EventCode | 7045 | Service installation |
