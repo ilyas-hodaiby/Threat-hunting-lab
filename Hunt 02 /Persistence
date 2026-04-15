@@ -60,3 +60,19 @@ index=* EventCode=4688
 - Parent process: `cmd.exe` — unusual for a service
 
 ---
+
+### Step 3 — Hunt for Scheduled Tasks
+
+```splunk
+index=* (EventCode=4698 OR EventCode=4702)
+| table _time, user, TaskName, TaskContent
+| sort - _time
+```
+
+**Findings:**
+- New scheduled task created: `\Microsoft\Windows\kd8j2h`
+- Suspicious name — random characters indicate automated creation
+- Task runs every 30 minutes
+- Action: Execute `C:\Users\Public\beacon.dll`
+
+---
