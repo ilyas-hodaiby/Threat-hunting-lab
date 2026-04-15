@@ -1,1 +1,26 @@
+# Hunt 02 — Persistence Detection
 
+**MITRE ATT&CK:** T1547.001 — Registry Run Keys  
+**Dataset:** EVTX Attack Samples (sbousseaden)  
+**Analyst:** Ilyas Hodaiby  
+**Status:** 
+
+---
+
+## Hypothesis
+
+> An attacker who has gained initial access will attempt to maintain persistence by adding malicious entries to Windows Registry Run keys. This ensures their malware survives reboots. The behaviour leaves clear artefacts in Windows Security Event Logs — specifically EventCode 4657 (Registry value modified) targeting Run/RunOnce keys.
+
+
+---
+
+## Log Sources Analysed
+
+| Source | Events | Purpose |
+|---|---|---|
+| Windows Security | EventCode 4657 | Registry modifications |
+| Windows Security | EventCode 4698, 4702 | Scheduled task creation |
+| Windows System | EventCode 7045 | New service installation |
+| Sysmon | EventCode 13 | Registry value set |
+
+---
