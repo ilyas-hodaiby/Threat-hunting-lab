@@ -98,3 +98,28 @@ index=botsv1 sourcetype=stream:smb
 - Access to `ADMIN$` share on multiple hosts — confirms PsExec lateral movement
 
 ---
+
+---
+
+## IOCs Extracted
+
+| Type | Value | Context |
+|---|---|---|
+| Source IP | 192.168.250.100 | Attacker pivot point |
+| Technique | Pass the Hash + PsExec | Lateral movement method |
+| Service | PSEXESVC | Persistence mechanism on remote hosts |
+| Logon Type | 3 (Network) | Authentication pattern |
+| Event Codes | 4624, 4625, 7045 | Key detection events |
+| Timeframe | ~12 minutes | Full lateral movement campaign |
+
+---
+
+## MITRE ATT&CK Mapping
+
+| Technique | ID | Evidence |
+|---|---|---|
+| Pass the Hash | T1550.002 | LogonType 3 from single IP to multiple hosts |
+| Remote Services: SMB/Windows Admin Shares | T1021.002 | ADMIN$ share access |
+| System Services: Service Execution | T1569.002 | PSEXESVC installation |
+| Lateral Tool Transfer | T1570 | Tools moved via SMB |
+
