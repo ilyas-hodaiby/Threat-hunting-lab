@@ -123,3 +123,28 @@ index=botsv1 sourcetype=stream:smb
 | System Services: Service Execution | T1569.002 | PSEXESVC installation |
 | Lateral Tool Transfer | T1570 | Tools moved via SMB |
 
+---
+
+## Detection Rules Created
+
+### Wazuh Custom Rule
+```xml
+<rule id="100010" level="12" frequency="5" timeframe="300">
+  <if_matched_sid>60122</if_matched_sid>
+  <same_source_ip/>
+  <same_field>win.eventdata.logonType</same_field>
+  <description>Possible Pass-the-Hash: Multiple network logons from same source</description>
+  <mitre>
+    <id>T1550.002</id>
+  </mitre>
+</rule>
+```
+
+### Splunk Detection Alert
+```splunk
+index=* EventCode=4624 LogonType=3
+| stats dc(dest) as unique_targets count by src_ip, user
+| where unique_targets >= 3 AND count >= 5
+| eval alert="Possible Lateral Movement — Pass the Hash"
+```
+
