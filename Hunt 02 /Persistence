@@ -24,3 +24,22 @@
 | Sysmon | EventCode 13 | Registry value set |
 
 ---
+## Investigation
+
+### Step 1 — Hunt for Registry Run Key Modifications
+
+```splunk
+index=* EventCode=4657
+  object_value_name IN ("*Run*","*RunOnce*")
+| table _time, user, process_name, 
+        object_value_name, object_value_data
+| sort - _time
+```
+
+**Findings:**
+- Registry key `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\WindowsUpdate32` modified
+- Value pointed to: `C:\Users\Public\svchost32.exe`
+- Modified by process: `cmd.exe` spawned from `powershell.exe`
+- Timestamp: 14:35:22 — 20 minutes after initial compromise
+
+---
