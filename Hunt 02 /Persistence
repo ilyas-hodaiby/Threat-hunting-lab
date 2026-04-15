@@ -53,3 +53,10 @@ index=* EventCode=4688
 | table _time, user, process_name, 
         parent_process_name, process_path
 ```
+
+**Findings:**
+- `svchost32.exe` executed from `C:\Users\Public\` — not a legitimate system path
+- Legitimate `svchost.exe` lives in `C:\Windows\System32\`
+- Parent process: `cmd.exe` — unusual for a service
+
+---
