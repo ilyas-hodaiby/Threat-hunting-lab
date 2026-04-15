@@ -43,3 +43,13 @@ index=* EventCode=4657
 - Timestamp: 14:35:22 — 20 minutes after initial compromise
 
 ---
+---
+
+### Step 2 — Validate the Binary
+
+```splunk
+index=* EventCode=4688 
+  process_name="*svchost32.exe*"
+| table _time, user, process_name, 
+        parent_process_name, process_path
+```
