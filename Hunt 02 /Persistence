@@ -129,3 +129,18 @@ index=* EventCode=4657
 | where count >= 1
 | eval alert="Registry Persistence Detected."
 ```
+### Wazuh Custom Rule
+```xml
+<rule id="100020" level="12">
+  <if_sid>60103</if_sid>
+  <field name="win.eventdata.objectValueName" 
+         type="pcre2">(?i)(run|runonce)</field>
+  <description>Registry Run key modification 
+  detected — possible persistence</description>
+  <mitre>
+    <id>T1547.001</id>
+  </mitre>
+</rule>
+```
+
+---
