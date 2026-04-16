@@ -144,3 +144,11 @@ index=* EventCode=4657
 ```
 
 ---
+## Recommendations
+
+1. Enable audit on Registry Run keys via Group Policy
+2. Restrict write access to Run keys for non-admin users
+3. Monitor `C:\Users\Public\` and `C:\Temp\` for executable files
+4. Alert on any scheduled task with random-character names
+5. Restrict service installation to administrators only
+
