@@ -117,3 +117,15 @@ index=* EventCode=7045
 | Windows Service | T1543.003 | EventCode 7045 — suspicious path |
 
 ---
+## Detection Rules
+
+### Splunk Alert — Registry Persistence
+```Splunk
+index=* EventCode=4657
+  object_value_name IN ("*Run*","*RunOnce*")
+  NOT process_name IN ("*msiexec*","*installer*")
+| stats count by user, process_name, 
+        object_value_name, object_value_data
+| where count >= 1
+| eval alert="Registry Persistence Detected."
+```
