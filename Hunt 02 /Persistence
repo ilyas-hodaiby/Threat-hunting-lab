@@ -105,3 +105,15 @@ index=* EventCode=7045
 | EventCode | 4657 | Registry modification |
 | EventCode | 4698 | Scheduled task creation |
 | EventCode | 7045 | Service installation |
+
+---
+
+## MITRE ATT&CK Mapping
+
+| Technique | ID | Evidence |
+|---|---|---|
+| Registry Run Keys | T1547.001 | EventCode 4657 — Run key modified |
+| Scheduled Task | T1053.005 | EventCode 4698 — random task name |
+| Windows Service | T1543.003 | EventCode 7045 — suspicious path |
+
+---
