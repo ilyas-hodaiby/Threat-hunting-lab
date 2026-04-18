@@ -57,3 +57,19 @@ ip.dst == 185.220.101.45
 - Packet size: consistent large packets = file transfer pattern
 
 ---
+### Step 3 — Identify Files Accessed Before Transfer
+
+```splunk
+index=* EventCode=4663
+| eval transfer_start=strptime("14:47:00","%H:%M:%S")
+| where _time > transfer_start - 300
+| stats count by user, object_name
+| sort - count
+```
+
+**Findings:**
+- 847 file access events in 5 minutes before transfer
+- Files accessed: Documents, Desktop, Network shares
+- Pattern consistent with automated file collection
+
+---
