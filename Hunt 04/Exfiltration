@@ -24,3 +24,22 @@
 
 ---
 
+## Investigation
+
+### Step 1 — Baseline Normal Outbound Traffic
+
+```splunk
+index=network sourcetype=zeek_conn
+| stats sum(orig_bytes) as total_bytes 
+        dc(id.resp_h) as unique_dests
+        by id.orig_h
+| sort - total_bytes
+| head 20
+```
+
+**Findings:**
+- Normal workstation outbound: < 50MB per hour
+- Anomalous host: 2.3GB in 45 minutes to single external IP
+- Destination: `185.220.101.45` — known Tor exit node
+
+---
