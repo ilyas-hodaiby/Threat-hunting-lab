@@ -43,3 +43,17 @@ index=network sourcetype=zeek_conn
 - Destination: `185.220.101.45` — known Tor exit node
 
 ---
+### Step 2 — Analyse Traffic to Suspicious IP
+
+**Wireshark filter:**
+```wireshark
+ip.dst == 185.220.101.45
+```
+
+**Findings:**
+- Traffic on port 4444 — non-standard, not HTTP/HTTPS
+- Encrypted payload — cannot inspect content
+- Continuous stream for 45 minutes
+- Packet size: consistent large packets = file transfer pattern
+
+---
