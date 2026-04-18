@@ -1,0 +1,26 @@
+# Hunt 04 — Data Exfiltration Detection
+
+**MITRE ATT&CK:** T1041 — Exfiltration Over C2 Channel  
+**Dataset:** Malware Traffic Analysis (PCAP)  
+**Analyst:** Ilyas Hodaiby  
+**Status:** 
+
+---
+
+## Hypothesis
+
+> After establishing a C2 channel, an attacker will attempt to exfiltrate collected data back to their infrastructure. This produces anomalous outbound traffic patterns — large data volumes to unusual destinations on non-standard ports — detectable through network log analysis.
+
+---
+
+## Log Sources Analysed
+
+| Source | Events | Purpose |
+|---|---|---|
+| Network flow logs | Zeek conn.log | Connection metadata |
+| PCAP files | Wireshark | Packet-level analysis |
+| Windows Security | EventCode 4663 | File access before exfil |
+| DNS logs | Zeek dns.log | C2 domain lookups |
+
+---
+
