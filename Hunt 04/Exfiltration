@@ -135,4 +135,16 @@ dns.qry.name contains "update-service"
 | DNS Resolution | T1071.004 | Fast-flux DNS C2 staging |
 
 ---
+## Detection Rules
 
+### Splunk — Large Outbound Transfer
+```splunk
+index=network sourcetype=zeek_conn
+| stats sum(orig_bytes) as total_bytes by 
+        id.orig_h, id.resp_h, id.resp_p
+| eval total_mb = total_bytes/1024/1024
+| where total_mb > 100 
+  AND id.resp_p NOT IN (80, 443, 25, 53)
+| eval alert="Large outbound transfer on 
+             non-standard port"
+```
