@@ -125,5 +125,14 @@ not tcp.port in {80, 443, 53, 25, 22}
 dns.qry.name contains "update-service"
 ```
 
+## MITRE ATT&CK Mapping
+
+| Technique | ID | Evidence |
+|---|---|---|
+| Exfiltration Over C2 Channel | T1041 | 2.3GB to C2 IP |
+| Data from Local System | T1005 | 847 file access events |
+| Archive Collected Data | T1560 | Likely compressed before transfer |
+| DNS Resolution | T1071.004 | Fast-flux DNS C2 staging |
+
 ---
 
