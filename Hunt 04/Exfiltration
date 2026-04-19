@@ -73,3 +73,17 @@ index=* EventCode=4663
 - Pattern consistent with automated file collection
 
 ---
+
+### Step 4 — DNS Analysis for C2 Staging
+
+```splunk
+index=network sourcetype=zeek_dns
+| stats count by query, answers
+| where count > 10
+| sort - count
+```
+
+**Findings:**
+- DNS queries to `update-service.xyz` — 127 times in 4 hours
+- Short TTL responses — fast-flux DNS = evasion technique
+- Domain registered 3 days before attack — newly registered = suspicious
