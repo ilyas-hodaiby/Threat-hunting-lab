@@ -148,3 +148,15 @@ index=network sourcetype=zeek_conn
 | eval alert="Large outbound transfer on 
              non-standard port"
 ```
+### Splunk — Newly Registered Domain Alert
+```splunk
+index=network sourcetype=zeek_dns
+| rex field=query 
+    "(?<tld>[^.]+\.[^.]+$)"
+| lookup domain_age_lookup tld 
+    OUTPUT age_days
+| where age_days < 30
+| table _time, query, age_days
+```
+
+---
