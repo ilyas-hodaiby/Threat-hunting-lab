@@ -87,3 +87,17 @@ index=network sourcetype=zeek_dns
 - DNS queries to `update-service.xyz` — 127 times in 4 hours
 - Short TTL responses — fast-flux DNS = evasion technique
 - Domain registered 3 days before attack — newly registered = suspicious
+
+---
+
+## IOCs Extracted
+
+| Type | Value | Context |
+|---|---|---|
+| Destination IP | 185.220.101.45 | Tor exit node — C2 |
+| Port | TCP/4444 | Non-standard exfil port |
+| Data Volume | 2.3GB | Exfiltrated data estimate |
+| C2 Domain | update-service.xyz | Fast-flux DNS |
+| Domain Age | 3 days old | Newly registered |
+| Duration | 45 minutes | Exfil timeframe |
+
