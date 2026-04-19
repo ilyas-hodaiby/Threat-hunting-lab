@@ -101,3 +101,29 @@ index=network sourcetype=zeek_dns
 | Domain Age | 3 days old | Newly registered |
 | Duration | 45 minutes | Exfil timeframe |
 
+---
+
+## Wireshark Analysis — Key Filters
+
+```wireshark
+# Show only exfil traffic
+ip.dst == 185.220.101.45 && tcp.port == 4444
+
+# Show data volume
+Statistics → Conversations → TCP tab
+→ Sort by bytes to find heaviest flows
+
+# Check for unencrypted content
+tcp.port == 4444 && data
+→ Follow TCP stream to inspect
+
+# Show all non-standard port traffic
+not tcp.port in {80, 443, 53, 25, 22}
+  && ip.dst != 192.168.0.0/16
+
+# DNS to suspicious domains
+dns.qry.name contains "update-service"
+```
+
+---
+
