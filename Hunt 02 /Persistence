@@ -27,7 +27,7 @@
 
 ### Step 1 — Hunt for Registry Run Key Modifications
 
-```splunk
+```Splunk
 index=* EventCode=4657
   object_value_name IN ("*Run*","*RunOnce*")
 | table _time, user, process_name, 
@@ -46,7 +46,7 @@ index=* EventCode=4657
 
 ### Step 2 — Validate the Binary
 
-```splunk
+```Splunk
 index=* EventCode=4688 
   process_name="*svchost32.exe*"
 | table _time, user, process_name, 
@@ -62,7 +62,7 @@ index=* EventCode=4688
 
 ### Step 3 — Hunt for Scheduled Tasks
 
-```splunk
+```Splunk
 index=* (EventCode=4698 OR EventCode=4702)
 | table _time, user, TaskName, TaskContent
 | sort - _time
@@ -77,7 +77,7 @@ index=* (EventCode=4698 OR EventCode=4702)
 ---
 ### Step 4 — Hunt for New Services
 
-```splunk
+```Splunk
 index=* EventCode=7045
 | table _time, ComputerName, ServiceName, 
         ServiceFileName, ServiceType
