@@ -6,3 +6,7 @@
 **Status:** 
 
 ---
+
+## Hypothesis
+
+> An attacker maintaining persistent access will communicate with their C2 server at regular intervals (beaconing) to receive commands. This regular, automated communication produces a detectable pattern in network logs — consistent connection intervals, consistent packet sizes, and unusual domain resolution patterns.
