@@ -21,3 +21,29 @@
 | Zeek dns.log | DNS queries | C2 domain resolution |
 | PCAP | Wireshark | Packet content analysis |
 | Windows Security | EventCode 4688 | Beacon process identification |
+
+---
+
+## Investigation
+
+### Step 1 — Detect Beaconing via Connection Regularity
+
+```splunk
+index=network sourcetype=zeek_conn
+| bucket _time span=1m
+| stats count by id.orig_h, 
+        id.resp_h, id.resp_p, _time
+| stats stdev(count) as stdev 
+        avg(count) as avg 
+        count as total_intervals
+  by id.orig_h, id.resp_h, id.resp_p
+| where stdev < 2 AND total_intervals > 10
+| eval beacon_score = round(100 - (stdev/avg*100),2)
+| sort - beacon_score
+```
+
+**Findings:**
+- Host `192.168.56.20` connecting to `185.220.101.45` every ~60 seconds
+- 240 connections over 4 hours — extremely regular
+- Beacon score: 98.7% — near-perfect regularity = automated
+- Port: 4444 — non-standard
