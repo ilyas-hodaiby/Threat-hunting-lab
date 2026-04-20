@@ -47,3 +47,25 @@ index=network sourcetype=zeek_conn
 - 240 connections over 4 hours — extremely regular
 - Beacon score: 98.7% — near-perfect regularity = automated
 - Port: 4444 — non-standard
+
+---
+
+### Step 2 — Analyse Packet Size Consistency
+
+**Wireshark analysis:**
+```wireshark
+ip.src == 192.168.56.20 
+  && ip.dst == 185.220.101.45
+
+Statistics → Packet Lengths
+→ Beacon check-ins: 128 bytes (consistent)
+→ Command responses: variable size
+→ Data exfil: large continuous stream
+```
+
+**Findings:**
+- Outbound packets consistently 128 bytes = heartbeat/check-in
+- Periodic larger responses = commands received from C2
+- Pattern matches Cobalt Strike default beacon configuration
+
+---
