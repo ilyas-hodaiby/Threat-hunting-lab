@@ -3,14 +3,13 @@
 **MITRE ATT&CK:** T1547.001 — Registry Run Keys  
 **Dataset:** EVTX Attack Samples (sbousseaden)  
 **Analyst:** Ilyas Hodaiby  
-**Status:** 
+**Status:** Complete ✅
 
 ---
 
 ## Hypothesis
 
 > An attacker who has gained initial access will attempt to maintain persistence by adding malicious entries to Windows Registry Run keys. This ensures their malware survives reboots. The behaviour leaves clear artefacts in Windows Security Event Logs — specifically EventCode 4657 (Registry value modified) targeting Run/RunOnce keys.
-
 
 ---
 
