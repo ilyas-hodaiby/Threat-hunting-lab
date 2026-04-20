@@ -69,3 +69,22 @@ Statistics → Packet Lengths
 - Pattern matches Cobalt Strike default beacon configuration
 
 ---
+### Step 3 — DNS Tunneling Detection
+
+```splunk
+index=network sourcetype=zeek_dns
+| eval query_length = len(query)
+| stats avg(query_length) as avg_len 
+        count as total_queries
+  by query
+| where avg_len > 40 OR total_queries > 50
+| sort - avg_len
+```
+
+**Findings:**
+- DNS queries to `update-service.xyz` with subdomains > 40 chars
+- Example: `a3f8b2c1d4e5.update-service.xyz`
+- Long random subdomains = DNS tunneling indicator
+- 127 queries over 4 hours — systematic pattern
+
+---
