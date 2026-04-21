@@ -107,3 +107,14 @@ index=* EventCode=4688
 - Confirms C2 beacon is the persistence mechanism from Hunt 02
 
 ---
+## IOCs Extracted
+
+| Type | Value | Context |
+|---|---|---|
+| C2 IP | 185.220.101.45 | Tor exit node |
+| C2 Domain | update-service.xyz | Fast-flux C2 |
+| Beacon Interval | 60 seconds | Cobalt Strike default |
+| Beacon Size | 128 bytes | Heartbeat packet |
+| Port | TCP/4444 | C2 channel |
+| Process | rundll32.exe | Beacon loader |
+| DLL | C:\Users\Public\beacon.dll | Cobalt Strike beacon |
