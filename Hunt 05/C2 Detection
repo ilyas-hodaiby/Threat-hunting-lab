@@ -88,3 +88,22 @@ index=network sourcetype=zeek_dns
 - 127 queries over 4 hours — systematic pattern
 
 ---
+
+### Step 4 — Process Identification
+
+```splunk
+index=* EventCode=4688
+| where _time > relative_time(now(),"-4h")
+| stats count by process_name, 
+        parent_process_name, process_path
+| where process_path LIKE "%AppData%"
+   OR process_path LIKE "%Temp%"
+   OR process_path LIKE "%Public%"
+```
+
+**Findings:**
+- `rundll32.exe` running from `C:\Users\Public\beacon.dll`
+- Parent: `svchost32.exe` (the fake svchost from Hunt 02)
+- Confirms C2 beacon is the persistence mechanism from Hunt 02
+
+---
