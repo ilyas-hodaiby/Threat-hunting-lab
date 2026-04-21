@@ -118,3 +118,30 @@ index=* EventCode=4688
 | Port | TCP/4444 | C2 channel |
 | Process | rundll32.exe | Beacon loader |
 | DLL | C:\Users\Public\beacon.dll | Cobalt Strike beacon |
+
+---
+
+## Zeek + Splunk Beaconing Query
+
+```splunk
+index=network sourcetype=zeek_conn
+| where NOT cidrmatch("10.0.0.0/8",id.resp_h)
+  AND NOT cidrmatch("192.168.0.0/16",id.resp_h)
+  AND NOT cidrmatch("172.16.0.0/12",id.resp_h)
+| bucket _time span=5m
+| stats count by id.orig_h, id.resp_h, 
+        id.resp_p, _time
+| stats stdev(count) as beacon_stdev
+        avg(count) as beacon_avg
+        min(count) as beacon_min
+        max(count) as beacon_max
+        count as intervals
+  by id.orig_h, id.resp_h, id.resp_p
+| where intervals > 12 AND beacon_stdev < 1.5
+| eval regularity_score = 
+    round((1 - beacon_stdev/(beacon_avg+0.001))*100,1)
+| where regularity_score > 80
+| sort - regularity_score
+```
+
+---
