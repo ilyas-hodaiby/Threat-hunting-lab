@@ -181,3 +181,13 @@ index=network sourcetype=zeek_dns
 | where count > 20
 | eval alert="DNS Tunneling suspected"
 ```
+---
+
+## Recommendations
+
+1. Deploy Zeek on all network segments for metadata collection
+2. Implement beaconing detection using statistical analysis (not just signatures)
+3. Block Tor exit node IP ranges at perimeter firewall
+4. Alert on DNS queries with subdomains longer than 35 characters
+5. Restrict outbound connections to approved destinations via proxy
+6. Monitor `C:\Users\Public\` and `C:\Temp\` for DLL files
