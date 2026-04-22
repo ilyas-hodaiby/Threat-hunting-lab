@@ -145,3 +145,13 @@ index=network sourcetype=zeek_conn
 ```
 
 ---
+
+## MITRE ATT&CK Mapping
+
+| Technique | ID | Evidence |
+|---|---|---|
+| Application Layer Protocol | T1071 | HTTP/custom protocol on port 4444 |
+| DNS | T1071.004 | Long subdomain queries = DNS tunneling |
+| Cobalt Strike | T1587.001 | Beacon pattern + DLL signature |
+| Proxy | T1090 | Tor exit node as C2 |
+
