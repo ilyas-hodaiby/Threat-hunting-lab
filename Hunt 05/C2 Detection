@@ -155,3 +155,19 @@ index=network sourcetype=zeek_conn
 | Cobalt Strike | T1587.001 | Beacon pattern + DLL signature |
 | Proxy | T1090 | Tor exit node as C2 |
 
+---
+
+## Detection Rules
+
+### Splunk — Beaconing Alert
+```splunk
+index=network sourcetype=zeek_conn
+| bucket _time span=1m
+| stats count by id.orig_h, id.resp_h, _time
+| stats stdev(count) as std avg(count) as avg 
+        count as periods
+  by id.orig_h, id.resp_h
+| where periods > 20 AND std < 1.0
+| eval alert="BEACONING DETECTED — possible C2"
+```
+
