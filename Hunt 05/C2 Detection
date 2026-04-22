@@ -169,5 +169,15 @@ index=network sourcetype=zeek_conn
   by id.orig_h, id.resp_h
 | where periods > 20 AND std < 1.0
 | eval alert="BEACONING DETECTED — possible C2"
-```
 
+```
+### Splunk — DNS Tunneling Alert
+```splunk
+index=network sourcetype=zeek_dns
+| eval subdomain_len = len(replace(query,
+    "\\.[^.]+\\.[^.]+$",""))
+| where subdomain_len > 35
+| stats count by query, id.orig_h
+| where count > 20
+| eval alert="DNS Tunneling suspected"
+```
