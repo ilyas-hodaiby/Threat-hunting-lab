@@ -53,7 +53,7 @@ index=network sourcetype=zeek_conn
 ### Step 2 — Analyse Packet Size Consistency
 
 **Wireshark analysis:**
-```wireshark
+```Wireshark
 ip.src == 192.168.56.20 
   && ip.dst == 185.220.101.45
 
@@ -71,7 +71,7 @@ Statistics → Packet Lengths
 ---
 ### Step 3 — DNS Tunneling Detection
 
-```splunk
+```Splunk
 index=network sourcetype=zeek_dns
 | eval query_length = len(query)
 | stats avg(query_length) as avg_len 
@@ -91,7 +91,7 @@ index=network sourcetype=zeek_dns
 
 ### Step 4 — Process Identification
 
-```splunk
+```Splunk
 index=* EventCode=4688
 | where _time > relative_time(now(),"-4h")
 | stats count by process_name, 
