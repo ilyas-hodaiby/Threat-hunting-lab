@@ -28,7 +28,7 @@
 
 ### Step 1 — Baseline Normal Outbound Traffic
 
-```splunk
+```Splunk
 index=network sourcetype=zeek_conn
 | stats sum(orig_bytes) as total_bytes 
         dc(id.resp_h) as unique_dests
@@ -76,7 +76,7 @@ index=* EventCode=4663
 
 ### Step 4 — DNS Analysis for C2 Staging
 
-```splunk
+```Splunk
 index=network sourcetype=zeek_dns
 | stats count by query, answers
 | where count > 10
@@ -86,7 +86,7 @@ index=network sourcetype=zeek_dns
 **Findings:**
 - DNS queries to `update-service.xyz` — 127 times in 4 hours
 - Short TTL responses — fast-flux DNS = evasion technique
-- Domain registered 3 days before attack — newly registered = suspicious
+- Domain registered 3 days before the attack — newly registered = suspicious
 
 ---
 
@@ -105,13 +105,13 @@ index=network sourcetype=zeek_dns
 
 ## Wireshark Analysis — Key Filters
 
-```wireshark
+```Wireshark
 # Show only exfil traffic
 ip.dst == 185.220.101.45 && tcp.port == 4444
 
 # Show data volume
 Statistics → Conversations → TCP tab
-→ Sort by bytes to find heaviest flows
+→ Sort by bytes to find the heaviest flows
 
 # Check for unencrypted content
 tcp.port == 4444 && data
@@ -138,7 +138,7 @@ dns.qry.name contains "update-service"
 ## Detection Rules
 
 ### Splunk — Large Outbound Transfer
-```splunk
+```Splunk
 index=network sourcetype=zeek_conn
 | stats sum(orig_bytes) as total_bytes by 
         id.orig_h, id.resp_h, id.resp_p
@@ -149,7 +149,7 @@ index=network sourcetype=zeek_conn
              non-standard port"
 ```
 ### Splunk — Newly Registered Domain Alert
-```splunk
+```Splunk
 index=network sourcetype=zeek_dns
 | rex field=query 
     "(?<tld>[^.]+\.[^.]+$)"
@@ -162,7 +162,7 @@ index=network sourcetype=zeek_dns
 ---
 ## Recommendations
 
-1. Block outbound traffic on non-standard ports at firewall
+1. Block outbound traffic on non-standard ports at the firewall
 2. Implement DLP (Data Loss Prevention) on sensitive file shares
 3. Alert on any single host transferring > 500MB outbound in 1 hour
 4. Subscribe to domain age threat feeds — block newly registered domains
