@@ -3,7 +3,7 @@
 **MITRE ATT&CK:** T1041 — Exfiltration Over C2 Channel  
 **Dataset:** Malware Traffic Analysis (PCAP)  
 **Analyst:** Ilyas Hodaiby  
-**Status:** 
+**Status:** Completed
 
 ---
 
@@ -59,7 +59,7 @@ ip.dst == 185.220.101.45
 ---
 ### Step 3 — Identify Files Accessed Before Transfer
 
-```splunk
+```Splunk
 index=* EventCode=4663
 | eval transfer_start=strptime("14:47:00","%H:%M:%S")
 | where _time > transfer_start - 300
