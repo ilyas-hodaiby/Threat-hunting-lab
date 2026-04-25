@@ -123,7 +123,7 @@ index=* EventCode=4688
 
 ## Zeek + Splunk Beaconing Query
 
-```splunk
+```Splunk
 index=network sourcetype=zeek_conn
 | where NOT cidrmatch("10.0.0.0/8",id.resp_h)
   AND NOT cidrmatch("192.168.0.0/16",id.resp_h)
@@ -179,7 +179,7 @@ index=network sourcetype=zeek_dns
 | where subdomain_len > 35
 | stats count by query, id.orig_h
 | where count > 20
-| eval alert="DNS Tunneling suspected"
+| eval alert="DNS Tunneling suspected."
 ```
 ---
 
