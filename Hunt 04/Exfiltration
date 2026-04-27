@@ -162,7 +162,7 @@ index=network sourcetype=zeek_dns
 ---
 ## Recommendations
 
-1. Block outbound traffic on non-standard ports at the firewall
+1. Block outbound traffic on non-standard ports at the front firewall
 2. Implement DLP (Data Loss Prevention) on sensitive file shares
 3. Alert on any single host transferring > 500MB outbound in 1 hour
 4. Subscribe to domain age threat feeds — block newly registered domains
