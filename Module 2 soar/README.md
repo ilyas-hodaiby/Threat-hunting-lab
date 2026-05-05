@@ -71,3 +71,13 @@ hive_alert_config:
     5 minutes. Wazuh rule 5763 triggered.
     Automatic Cortex enrichment initiated.
 ```
+---
+
+## Cortex Analysers Used
+
+| Analyser | IOC Type | What It Returns |
+|---|---|---|
+| AbuseIPDB | IP address | Abuse score, total reports, country |
+| VirusTotal | IP, hash, domain | Detection ratio, malware family |
+| Shodan | IP address | Open ports, services, geolocation |
+| URLScan | URL/domain | Screenshot, DNS, HTTP headers |
