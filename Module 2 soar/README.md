@@ -112,4 +112,14 @@ hive_alert_config:
   ]
 }
 ```
+---
 
+## Results — SOAR vs Manual
+
+| Metric | Manual Process | SOAR Automated |
+|---|---|---|
+| Time to case creation | 5-10 minutes | < 30 seconds |
+| IOC enrichment | 10-15 minutes | < 2 minutes |
+| Human error risk | High | Minimal |
+| Consistency | Variable | 100% consistent |
+| Mean Time to Respond | 20-30 minutes | 5-8 minutes |
