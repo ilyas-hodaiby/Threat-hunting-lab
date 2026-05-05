@@ -128,4 +128,4 @@ hive_alert_config:
 
 ## SOC Context
 
-At Dataprotect, we used TheHive and Cortex daily. Cases were created manually by N1 analysts and enriched using Cortex analysers. This module automates that entire process — the same outcome but without manual intervention, freeing the analyst to focus on investigation rather than administration.
+From my experience , we used TheHive and Cortex daily. Cases were created manually by N1 analysts and enriched using Cortex analysers. This module automates that entire process — the same outcome but without manual intervention, freeing the analyst to focus on investigation rather than administration.
