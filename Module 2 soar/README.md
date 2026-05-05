@@ -78,3 +78,38 @@ hive_alert_config:
 | VirusTotal | IP, hash, domain | Detection ratio, malware family |
 | Shodan | IP address | Open ports, services, geolocation |
 | URLScan | URL/domain | Screenshot, DNS, HTTP headers |
+
+---
+
+## TheHive Case Template
+
+```json
+{
+  "title": "SSH Brute Force — Automated Detection",
+  "severity": 2,
+  "tags": ["brute-force", "T1110.001", "automated"],
+  "tasks": [
+    {
+      "title": "1 — Verify alert",
+      "description": "Check Splunk for full context"
+    },
+    {
+      "title": "2 — Review Cortex results",
+      "description": "Check AbuseIPDB + VirusTotal scores"
+    },
+    {
+      "title": "3 — Check for successful login",
+      "description": "Search for EventCode 4624 from attacker IP"
+    },
+    {
+      "title": "4 — Contain if needed",
+      "description": "Block attacker IP at firewall"
+    },
+    {
+      "title": "5 — Document and close",
+      "description": "Write findings and close case"
+    }
+  ]
+}
+```
+
