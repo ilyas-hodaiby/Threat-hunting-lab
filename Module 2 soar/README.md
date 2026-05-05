@@ -32,3 +32,42 @@ This directly mirrors the SOAR workflow I operated during my time as a Junior SO
          ↓
 6. Case closed with full IR report
 ```
+---
+
+## ElastAlert Configuration
+
+```yaml
+name: SSH Brute Force — SOAR Trigger
+type: frequency
+index: wazuh-alerts-*
+num_events: 10
+timeframe:
+  minutes: 5
+
+filter:
+  - term:
+      rule.id: "5763"
+
+alert:
+  - hivealerter
+
+hive_connection:
+  hive_host: http://localhost
+  hive_port: 9000
+  hive_apikey: YOUR_API_KEY
+
+hive_alert_config:
+  type: external
+  source: ElastAlert
+  severity: 2
+  tags:
+    - brute-force
+    - ssh
+    - T1110.001
+  title: "SSH Brute Force Detected — {data.srcip}"
+  description: >
+    ElastAlert detected 10+ SSH authentication
+    failures from the same source IP within
+    5 minutes. Wazuh rule 5763 triggered.
+    Automatic Cortex enrichment initiated.
+```
