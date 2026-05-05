@@ -2,7 +2,7 @@
 
 **Tools:** ElastAlert · TheHive · Cortex  
 **Analyst:** Ilyas Hodaiby  
-**Status:** Complete ✅
+**Status:** 
 
 ---
 
