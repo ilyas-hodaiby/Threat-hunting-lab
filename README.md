@@ -70,7 +70,7 @@ threat-hunting-lab/
 
 | Module | Focus | Tools | Status |
 |---|---|---|---|
-| 1 — Threat Hunting | 5 hunt scenarios | Splunk, ELK |
+| 1 — Threat Hunting | 5 hunt scenarios | Splunk, ELK | done 
 
 ## 👤 About
 
