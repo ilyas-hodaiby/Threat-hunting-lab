@@ -9,7 +9,7 @@
 
 ## Hypothesis
 
-> After establishing a C2 channel, an attacker will attempt to exfiltrate collected data back to their infrastructure. This produces anomalous outbound traffic patterns — large data volumes to unusual destinations on non-standard ports — detectable through network log analysis.
+> After establishing a C2 channel attack , an attacker will attempt to exfiltrate collected data back to their infrastructure. This produces anomalous outbound traffic patterns — large data volumes to unusual destinations on non-standard ports — detectable through network log analysis.
 
 ---
 
