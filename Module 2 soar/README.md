@@ -123,3 +123,9 @@ hive_alert_config:
 | Human error risk | High | Minimal |
 | Consistency | Variable | 100% consistent |
 | Mean Time to Respond | 20-30 minutes | 5-8 minutes |
+
+---
+
+## SOC Context
+
+At Dataprotect, we used TheHive and Cortex daily. Cases were created manually by N1 analysts and enriched using Cortex analysers. This module automates that entire process — the same outcome but without manual intervention, freeing the analyst to focus on investigation rather than administration.
