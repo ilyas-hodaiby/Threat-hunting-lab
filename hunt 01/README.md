@@ -57,6 +57,8 @@ index=botsv1 EventCode=4624 LogonType=3
 - All authentications occurred within a 12-minute window
 - Username used: `SYSTEM` and `Administrator`
 
+![Successful Logins - EventCode 4624](hunt01-successful-logins-4624.png)
+
 ---
 ### Step 3 — Correlate with Failed Authentications
 
