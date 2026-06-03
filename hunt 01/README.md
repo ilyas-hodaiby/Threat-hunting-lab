@@ -53,9 +53,8 @@ index=win-alert EventCode=4624 LogonType=3
 ```
 
 **Findings:**
-- Source IP `192.168.250.100` authenticated to 7 different hosts using LogonType 3
-- All authentications occurred within a 12-minute window
-- Username used: `SYSTEM` and `Administrator`
+- Source IP `10.14.94.82` authenticated to WIN-H015 using LogonType 3
+- Secondary source IP `10.10.157.155` also authenticating as oliver.thompson
 
 ![Successful Logins - EventCode 4624](hunt01-successful-logins-4624.png)
 
@@ -69,9 +68,9 @@ index=win-alert EventCode=4625
 ```
 
 **Findings:**
-- Same source IP `192.168.250.100` had 23 failed attempts before successful LogonType 3
-- Pattern consistent with automated credential testing (Pass the Hash toolkit)
-- 
+- `10.10.157.155` had 7 failed attempts (4625) before 4 successful logins (4624)
+- Pattern consistent with brute force → successful compromise
+ 
 ![Failed vs Successful Pattern](hunt01-failed-vs-success-pattern.png)
 
 ---
@@ -92,7 +91,7 @@ index=win-alert EventCode=7045
 
 ```Splunk
 index=win-alert sourcetype=stream:smb 
-  src_ip="192.168.250.100"
+ src_ip="10.10.157.155"
 | stats count by dest_ip, path
 | sort - count
 ```
@@ -111,9 +110,13 @@ index=win-alert sourcetype=stream:smb
 
 | Type | Value | Context |
 |---|---|---|
-| Source IP | 192.168.250.100 | Attacker pivot point |
+| Source IP | 10.10.157.155 | Primary attacker IP |
+| Source IP | 10.14.94.82 | Secondary attacker IP |
+| Target Host | WIN-H015 | Compromised machine |
+| Username | oliver.thompson | Targeted account |
+| Username | Administrator | Targeted account |
 | Technique | Pass the Hash + PsExec | Lateral movement method |
-| Service | PSEXESVC | Persistence mechanism on remote hosts |
+| Service | PSEXESVC | Persistence on remote hosts |
 | Logon Type | 3 (Network) | Authentication pattern |
 | Event Codes | 4624, 4625, 7045 | Key detection events |
 | Timeframe | ~12 minutes | Full lateral movement campaign |
