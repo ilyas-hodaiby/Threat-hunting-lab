@@ -71,6 +71,8 @@ index=botsv1 EventCode=4625
 **Findings:**
 - Same source IP `192.168.250.100` had 23 failed attempts before successful LogonType 3
 - Pattern consistent with automated credential testing (Pass the Hash toolkit)
+- 
+![Failed vs Successful Pattern](hunt01-failed-vs-success-pattern.png)
 
 ---
 ### Step 4 — Check for Service Installation Post-Compromise
@@ -98,6 +100,8 @@ index=botsv1 sourcetype=stream:smb
 **Findings:**
 - High volume SMB traffic from attacker IP to multiple destinations
 - Access to `ADMIN$` share on multiple hosts — confirms PsExec lateral movement
+  
+![Attack Timeline](hunt01-timeline-chart.png)
 
 ---
 
