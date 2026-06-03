@@ -31,7 +31,7 @@
 First, I established what normal authentication looks like in this environment:
 
 ```Splunk
-index=botsv1 EventCode=4624 
+index=win-alert EventCode=4624 
 | stats count by LogonType, src_ip 
 | sort - count
 ```
@@ -46,7 +46,7 @@ index=botsv1 EventCode=4624
 ### Step 2 — Hunt for Anomalous Network Logons
 
 ```Splunk
-index=botsv1 EventCode=4624 LogonType=3
+index=win-alert EventCode=4624 LogonType=3
 | stats count by src_ip, dest, user 
 | where count > 3
 | sort - count
@@ -63,7 +63,7 @@ index=botsv1 EventCode=4624 LogonType=3
 ### Step 3 — Correlate with Failed Authentications
 
 ```Splunk
-index=botsv1 EventCode=4625 
+index=win-alert EventCode=4625 
 | stats count by src_ip, dest, user
 | sort - count
 ```
@@ -78,7 +78,7 @@ index=botsv1 EventCode=4625
 ### Step 4 — Check for Service Installation Post-Compromise
 
 ```Splunk
-index=botsv1 EventCode=7045
+index=win-alert EventCode=7045
 | table _time, ComputerName, ServiceName, ServiceFileName
 | sort - _time
 ```
@@ -91,7 +91,7 @@ index=botsv1 EventCode=7045
 ### Step 5 — Network Traffic Correlation
 
 ```Splunk
-index=botsv1 sourcetype=stream:smb 
+index=win-alert sourcetype=stream:smb 
   src_ip="192.168.250.100"
 | stats count by dest_ip, path
 | sort - count
