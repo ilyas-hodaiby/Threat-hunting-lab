@@ -28,7 +28,7 @@
 ### Step 1 — Hunt for Registry Run Key Modifications
 
 ```Splunk
-index=* EventCode=4657
+index=main EventCode=4657
   object_value_name IN ("*Run*","*RunOnce*")
 | table _time, user, process_name, 
         object_value_name, object_value_data
@@ -40,14 +40,14 @@ index=* EventCode=4657
 - Value pointed to: `C:\Users\Public\svchost32.exe`
 - Modified by process: `cmd.exe` spawned from `powershell.exe`
 - Timestamp: 14:35:22 — 20 minutes after initial compromise
-
+![Registry Persistence Sysmon13](hunt02-registry-persistence-sysmon13.png)
 ---
 ---
 
 ### Step 2 — Validate the Binary
 
 ```Splunk
-index=* EventCode=4688 
+index=main EventCode=4688 
   process_name="*svchost32.exe*"
 | table _time, user, process_name, 
         parent_process_name, process_path
@@ -57,38 +57,40 @@ index=* EventCode=4688
 - `svchost32.exe` executed from `C:\Users\Public\` — not a legitimate system path
 - Legitimate `svchost.exe` lives in `C:\Windows\System32\`
 - Parent process: `cmd.exe` — unusual for a service
-
+![Suspicious Processes EventID1](hunt02-suspicious-processes-eventid1.png)
 ---
 
-### Step 3 — Hunt for Scheduled Tasks
+### Step 3 — Hunt for Suspicious Account Creation
 
 ```Splunk
-index=* (EventCode=4698 OR EventCode=4702)
-| table _time, user, TaskName, TaskContent
-| sort - _time
+index=main sourcetype=event_logs EventID=1
+| where User="Cybertees\\James"
+| table _time, Image, ParentImage, CommandLine
+| sort -_time
 ```
 
 **Findings:**
-- New scheduled task created: `\Microsoft\Windows\kd8j2h`
-- Suspicious name — random characters indicate automated creation
-- Task runs every 30 minutes
-- Action: Execute `C:\Users\Public\beacon.dll`
-
+- `Cybertees\James` executed `net user /add A1berto paw0rd1`
+- Used `WMIC.exe` to run command remotely on `WORKSTATION6`
+- PowerShell spawned WMIC — living off the land technique
+- All 6 events at `2022-05-11 22:32:18` — automated execution
+- Backdoor account `A1berto` created for persistent access
+![Backdoor Account A1berto](hunt02-backdoor-account-A1berto.png)
 ---
 ### Step 4 — Hunt for New Services
 
 ```Splunk
-index=* EventCode=7045
+index=main EventCode=7045
 | table _time, ComputerName, ServiceName, 
         ServiceFileName, ServiceType
 | sort - _time
 ```
 
 **Findings:**
-- New service `WinUpdateHelper` installed
-- Service binary: `C:\Temp\update.exe` — suspicious path
-- Service type: Own process
-- Start type: Automatic — survives reboot
+- Sysmon EventID 13 captured registry value sets by `svchost.exe`
+- Registry paths modified under `CurrentVersion\DeliveryOptimization`
+- Background task components modified — indicates stealthy persistence
+- 1,143 registry modification events detected in total
 
 ---
 
@@ -96,15 +98,15 @@ index=* EventCode=7045
 
 | Type | Value | Context |
 |---|---|---|
-| Registry Key | HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\WindowsUpdate32 | Persistence |
-| Malicious Binary | C:\Users\Public\svchost32.exe | Fake svchost |
-| Scheduled Task | \Microsoft\Windows\kd8j2h | Auto-execution |
-| Service | WinUpdateHelper | Persistence service |
-| Service Binary | C:\Temp\update.exe | Malicious dropper |
-| EventCode | 4657 | Registry modification |
-| EventCode | 4698 | Scheduled task creation |
-| EventCode | 7045 | Service installation |
-
+| Attacker User | Cybertees\James | Executed persistence attack |
+| Backdoor Account | A1berto | Created via net user command |
+| Password | paw0rd1 | Hardcoded in command |
+| Tool | WMIC.exe | Remote WMI execution |
+| Tool | net.exe / net1.exe | Account creation |
+| Target Host | WORKSTATION6 | Remote execution target |
+| EventID | 1 | Process creation (Sysmon) |
+| EventID | 13 | Registry value set (Sysmon) |
+| Timestamp | 2022-05-11 22:32:18 | Attack timestamp |
 ---
 
 ## MITRE ATT&CK Mapping
@@ -112,15 +114,16 @@ index=* EventCode=7045
 | Technique | ID | Evidence |
 |---|---|---|
 | Registry Run Keys | T1547.001 | EventCode 4657 — Run key modified |
-| Scheduled Task | T1053.005 | EventCode 4698 — random task name |
-| Windows Service | T1543.003 | EventCode 7045 — suspicious path |
-
+| Create Local Account | T1136.001 | net user /add A1berto paw0rd1 |
+| WMI Execution | T1047 | WMIC.exe remote process creation |
+| Living Off the Land | T1218 | PowerShell → WMIC → net.exe chain |
+![EventID Overview](hunt02-eventid-overview.png)
 ---
 ## Detection Rules
 
 ### Splunk Alert — Registry Persistence
 ```Splunk
-index=* EventCode=4657
+index=main EventCode=4657
   object_value_name IN ("*Run*","*RunOnce*")
   NOT process_name IN ("*msiexec*","*installer*")
 | stats count by user, process_name, 
