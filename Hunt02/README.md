@@ -28,11 +28,10 @@
 ### Step 1 — Hunt for Registry Run Key Modifications
 
 ```Splunk
-index=main EventCode=4657
-  object_value_name IN ("*Run*","*RunOnce*")
-| table _time, user, process_name, 
-        object_value_name, object_value_data
-| sort - _time
+index=main sourcetype=event_logs EventID=13
+| stats count by Image, TargetObject, Details
+| sort -count
+| head 20
 ```
 
 **Findings:**
@@ -46,10 +45,11 @@ index=main EventCode=4657
 ### Step 2 — Validate the Binary
 
 ```Splunk
-index=main EventCode=4688 
-  process_name="*svchost32.exe*"
-| table _time, user, process_name, 
-        parent_process_name, process_path
+index=main sourcetype=event_logs EventID=1
+| stats count by Image, ParentImage, User
+| where User!="NT AUTHORITY\\SYSTEM"
+| sort -count
+| head 20
 ```
 
 **Findings:**
