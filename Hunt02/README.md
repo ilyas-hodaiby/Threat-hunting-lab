@@ -116,6 +116,7 @@ index=main sourcetype=event_logs EventID=13
 | Create Local Account | T1136.001 | net user /add A1berto paw0rd1 |
 | WMI Execution | T1047 | WMIC.exe remote process creation |
 | Living Off the Land | T1218 | PowerShell → WMIC → net.exe chain |
+
 ![EventID Overview](hunt02-eventid-overview.png)
 ---
 ## Detection Rules
