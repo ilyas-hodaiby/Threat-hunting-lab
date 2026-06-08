@@ -1,7 +1,7 @@
 # Hunt 02 — Persistence Detection
 
 **MITRE ATT&CK:** T1547.001 — Registry Run Keys  
-**Dataset:** EVTX Attack Samples (sbousseaden)  
+**Dataset:** TryHackMe — Benign Room (Sysmon + Windows Event Logs)
 **Analyst:** Ilyas Hodaiby  
 **Status:** Complete ✅
 
@@ -36,10 +36,9 @@ index=main EventCode=4657
 ```
 
 **Findings:**
-- Registry key `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\WindowsUpdate32` modified
-- Value pointed to: `C:\Users\Public\svchost32.exe`
-- Modified by process: `cmd.exe` spawned from `powershell.exe`
-- Timestamp: 14:35:22 — 20 minutes after initial compromise
+- Sysmon EventID 13 detected 1,143 registry modification events
+- `svchost.exe` and `usocoreworker.exe` modifying registry paths
+- Modifications under `CurrentVersion\DeliveryOptimization` — suspicious persistence location
 ![Registry Persistence Sysmon13](hunt02-registry-persistence-sysmon13.png)
 ---
 ---
@@ -54,9 +53,9 @@ index=main EventCode=4688
 ```
 
 **Findings:**
-- `svchost32.exe` executed from `C:\Users\Public\` — not a legitimate system path
-- Legitimate `svchost.exe` lives in `C:\Windows\System32\`
-- Parent process: `cmd.exe` — unusual for a service
+- EventID 1 process creation shows `Cybertees\Alberto` running multiple background processes
+- `Cybertees\James` running `net.exe` — unusual for normal user
+- Parent process chain: `WmiPrvSE.exe` → `net.exe` — WMI-based execution
 ![Suspicious Processes EventID1](hunt02-suspicious-processes-eventid1.png)
 ---
 
@@ -80,10 +79,10 @@ index=main sourcetype=event_logs EventID=1
 ### Step 4 — Hunt for New Services
 
 ```Splunk
-index=main EventCode=7045
-| table _time, ComputerName, ServiceName, 
-        ServiceFileName, ServiceType
-| sort - _time
+index=main sourcetype=event_logs EventID=13
+| stats count by Image, TargetObject
+| sort -count
+| head 20
 ```
 
 **Findings:**
