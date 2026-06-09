@@ -1,7 +1,15 @@
-**MITRE ATT&CK:** T1003 — OS Credential Dumping  
-**Dataset:** BOTS v2 (Splunk Boss of the SOC)  
+# Hunt 03 — Credential Access Detection
+
+**MITRE ATT&CK:** T1110.001 — Brute Force: Password Guessing  
+**Dataset:** TryHackMe — Investigating with Splunk (Windows Security Logs)  
 **Analyst:** Ilyas Hodaiby  
 **Status:** Complete ✅
+
+---
+
+## Hypothesis
+
+> An attacker targeting a Windows environment will attempt to gain access by brute-forcing user credentials. This produces multiple failed login events (EventCode 4625) from a single source IP, followed by successful authentication (EventCode 4624) — a clear indicator of credential access via password guessing.
 
 ---
 
@@ -9,79 +17,80 @@
 
 | Source | Events | Purpose |
 |---|---|---|
-| Windows Security | EventCode 4688 | Process creation |
-| Windows Security | EventCode 4663 | Object access |
-| Sysmon | EventCode 10 | Process access (LSASS) |
-| Windows Security | EventCode 4624, 4648 | Authentication with dumped creds |
+| Windows Security | EventCode 4625 | Failed login attempts |
+| Windows Security | EventCode 4624 | Successful logins |
+| Windows Security | LogonType 3 | Network-based authentication |
 
 ---
+
 ## Investigation
 
-### Step 1 — Hunt for LSASS Access
+### Step 1 — Hunt for Failed Login Attempts
 
 ```Splunk
-index=* EventCode=4663 
-  object_name="*lsass*"
-| stats count by process_name, 
-        user, access_mask
-| sort - count
+index=win-alert EventCode=4625
+| stats count by src_ip, user
+| sort -count
 ```
 
 **Findings:**
-- `powershell.exe` accessed `lsass.exe` with access mask `0x1010`
-- Access mask `0x1010` = PROCESS_VM_READ — reads process memory
-- Non-system process accessing LSASS = credential dumping indicator
+- `oliver.thompson` account targeted from `10.10.157.155`
+- 7 failed login attempts detected
+- Single source IP targeting single account — automated brute force pattern
+
+![Failed Logins 4625](hunt03-failed-logins-4625.png)
 
 ---
 
-### Step 2 — Hunt for Mimikatz Artefacts
+### Step 2 — Correlate Failed vs Successful Logins
 
 ```Splunk
-index=* (EventCode=4688 OR EventCode=4103 OR EventCode=4104)
-| search process_name="*mimikatz*" 
-  OR CommandLine="*sekurlsa*" 
-  OR CommandLine="*lsadump*"
-  OR CommandLine="*privilege::debug*"
-| table _time, user, process_name, CommandLine
+index=win-alert EventCode=4625 OR EventCode=4624
+| stats count by EventCode, src_ip, user
+| sort -count
 ```
 
 **Findings:**
-- PowerShell script block log (EventCode 4104) contained:
-  `Invoke-Expression (New-Object Net.WebClient).DownloadString`
-- Downloaded and executed Mimikatz in memory
-- Obfuscated to avoid string-based detection
+- `10.10.157.155` → `oliver.thompson`: 7 failures (4625) then 4 successes (4624)
+- `10.14.94.82` → `Administrator`: 4 successful logins
+- `10.14.94.82` → `oliver.thompson`: 3 successful logins
+- Pattern confirms brute force → successful compromise
 
----
-### Step 3 — Hunt for Unusual Authentication After Dump
-
-```Splunk
-index=* EventCode=4624 
-| eval hour=strftime(_time,"%H")
-| stats count by src_ip, user, LogonType, hour
-| where LogonType=3 AND count > 3
-| sort - count
-```
-
-**Findings:**
-- 5 new accounts authenticated via LogonType 3 from attacker IP
-- All within 8 minutes of LSASS access
-- Confirms credential dump was successful and immediately used
+![Failed vs Successful Pattern](hunt03-failed-vs-success.png)
 
 ---
 
-### Step 4 — Hunt for Token Manipulation
+### Step 3 — Detailed Timeline of Attack
 
 ```Splunk
-index=* EventCode=4648
-| table _time, user, target_user, 
-        process_name, src_ip
-| sort - _time
+index=win-alert EventCode=4625
+| table _time, src_ip, user, ComputerName
+| sort -_time
 ```
 
 **Findings:**
-- EventCode 4648 shows explicit credential use
-- `SYSTEM` account used credentials for `Administrator`
-- Classic Pass-the-Hash / token impersonation pattern
+- All 7 failed attempts against `WIN-H015`
+- Attempts clustered between `09:50:02` and `09:50:24` — 22 seconds
+- Rapid sequential attempts = automated tool (not manual)
+- Target: `oliver.thompson` on `WIN-H015`
+
+![Detailed Events Timeline](hunt03-detailed-events.png)
+
+---
+
+### Step 4 — Attack Timeline Visualization
+
+```Splunk
+index=win-alert EventCode=4624 OR EventCode=4625
+| timechart count by EventCode
+```
+
+**Findings:**
+- Clear spike at `09:50 AM` on `2025-08-30`
+- 4625 (failures) peak then immediate 4624 (successes) — confirms compromise
+- Activity continues across multiple time windows — persistent attacker
+
+![Attack Timeline Chart](hunt03-timelinee.png)
 
 ---
 
@@ -89,57 +98,68 @@ index=* EventCode=4648
 
 | Type | Value | Context |
 |---|---|---|
-| Process | powershell.exe | Mimikatz loader |
-| Access Mask | 0x1010 | LSASS memory read |
-| File Hash | d41d8cd98f00b204... | Mimikatz binary |
-| Technique | In-memory execution | Fileless malware |
-| EventCode | 4663 | LSASS object access |
-| EventCode | 4648 | Explicit credential use |
-| EventCode | 4104 | PowerShell script block |
+| Attacker IP | 10.10.157.155 | Primary brute force source |
+| Attacker IP | 10.14.94.82 | Secondary source — post-compromise |
+| Target User | oliver.thompson | Brute forced account |
+| Target User | Administrator | Also targeted |
+| Target Host | WIN-H015 | Compromised machine |
+| EventCode | 4625 | 7 failed login attempts |
+| EventCode | 4624 | 11 successful logins total |
+| Timeframe | 2025-08-30 09:50:02–09:50:24 | 22-second attack window |
 
 ---
+
 ## MITRE ATT&CK Mapping
 
 | Technique | ID | Evidence |
 |---|---|---|
-| OS Credential Dumping: LSASS Memory | T1003.001 | EventCode 4663 — LSASS access |
-| Fileless Malware | T1059.001 | PowerShell in-memory execution |
-| Token Impersonation | T1134 | EventCode 4648 |
-| Obfuscated Files | T1027 | Base64 encoded PowerShell |
+| Brute Force: Password Guessing | T1110.001 | 7 x EventCode 4625 from single IP |
+| Valid Accounts | T1078 | Successful login after brute force |
+| Lateral Movement via Valid Accounts | T1021 | LogonType 3 from attacker IP |
 
 ---
+
 ## Detection Rules
 
-### Splunk — LSASS Access Alert
+### Splunk — Brute Force Alert
 ```Splunk
-index=* EventCode=4663 
-  object_name="*lsass*"
-  NOT process_name IN (
-    "*System*","*csrss*","*wininit*",
-    "*services*","*lsass*","*svchost*"
-  )
-| eval alert="LSASS access by non-system process"
-| table _time, process_name, user, alert
+index=win-alert EventCode=4625
+| stats count by src_ip, user
+| where count >= 5
+| eval alert="Possible Brute Force Attack"
+| table _time, src_ip, user, count, alert
 ```
-### Splunk — Mimikatz Keywords
+
+### Splunk — Brute Force then Success
 ```Splunk
-index=* (EventCode=4103 OR EventCode=4104)
-| search ScriptBlockText IN (
-    "*mimikatz*","*sekurlsa*",
-    "*lsadump*","*privilege::debug*",
-    "*Invoke-Mimikatz*"
-  )
-| table _time, user, ScriptBlockText
+index=win-alert EventCode=4625 OR EventCode=4624
+| stats count by EventCode, src_ip, user
+| eval status=if(EventCode=4625,"FAILED","SUCCESS")
+| stats values(status) as attempts by src_ip, user
+| where mvcount(attempts) > 1
+| eval alert="Brute Force Followed by Success"
+```
+
+### Wazuh Custom Rule
+```xml
+<rule id="100030" level="12" frequency="5" timeframe="60">
+  <if_matched_sid>60122</if_matched_sid>
+  <same_source_ip/>
+  <same_field>win.eventdata.targetUserName</same_field>
+  <description>Brute Force: Multiple failed logins 
+  from same IP against same user</description>
+  <mitre>
+    <id>T1110.001</id>
+  </mitre>
+</rule>
 ```
 
 ---
 
 ## Recommendations
 
-1. Enable LSASS Protection (RunAsPPL) — blocks most Mimikatz variants
-2. Enable PowerShell Script Block Logging (EventCode 4104)
-3. Deploy Credential Guard on Windows 10/11 endpoints
-4. Alert on access mask 0x1010 against lsass.exe
-5. Restrict PowerShell.exe execution policy to signed scripts
-
-
+1. Implement account lockout policy after 5 failed attempts
+2. Enable Multi-Factor Authentication (MFA) for all accounts
+3. Block IP `10.10.157.155` at firewall level
+4. Alert on 5+ failed logins from same IP within 60 seconds
+5. Review all successful logins from `10.14.94.82` for lateral movement
