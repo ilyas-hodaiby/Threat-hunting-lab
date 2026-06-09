@@ -1,7 +1,7 @@
-# Hunt 04 — Data Exfiltration Detection
+# Hunt 04 — Web Attack & Data Exfiltration Detection
 
-**MITRE ATT&CK:** T1041 — Exfiltration Over C2 Channel  
-**Dataset:** Malware Traffic Analysis (PCAP)  
+**MITRE ATT&CK:** T1190 — Exploit Public-Facing Application  
+**Dataset:** TryHackMe — Investigating with Splunk (Web Access Logs)  
 **Analyst:** Ilyas Hodaiby  
 **Status:** Complete ✅
 
@@ -9,7 +9,7 @@
 
 ## Hypothesis
 
-> After establishing a C2 channel attack , an attacker will attempt to exfiltrate collected data back to their infrastructure. This produces anomalous outbound traffic patterns — large data volumes to unusual destinations on non-standard ports — detectable through network log analysis.
+> An attacker targeting a web application will use automated tools to brute force authentication pages, then access admin panels to exfiltrate data. This produces anomalous HTTP traffic patterns — high request volumes from single IPs using attack tool user agents — detectable through web log analysis.
 
 ---
 
@@ -17,76 +17,93 @@
 
 | Source | Events | Purpose |
 |---|---|---|
-| Network flow logs | Zeek conn.log | Connection metadata |
-| PCAP files | Wireshark | Packet-level analysis |
-| Windows Security | EventCode 4663 | File access before exfil |
-| DNS logs | Zeek dns.log | C2 domain lookups |
+| Web Access Logs | index=web-alert | HTTP request logs |
+| User Agent Strings | _raw field | Tool identification |
+| URL patterns | _raw field | Attack surface mapping |
 
 ---
 
 ## Investigation
 
-### Step 1 — Baseline Normal Outbound Traffic
+### Step 1 — Baseline Web Traffic by Volume
 
 ```Splunk
-index=network sourcetype=zeek_conn
-| stats sum(orig_bytes) as total_bytes 
-        dc(id.resp_h) as unique_dests
-        by id.orig_h
-| sort - total_bytes
+index=web-alert
+| rex field=_raw "(?<src_ip>\d+\.\d+\.\d+\.\d+).*\"(?<method>\w+) (?<url>\S+).*\" (?<status>\d+) (?<bytes>\d+)"
+| stats sum(bytes) as total_bytes by src_ip, url
+| sort -total_bytes
 | head 20
 ```
 
 **Findings:**
-- Normal workstation outbound: < 50MB per hour
-- Anomalous host: 2.3GB in 45 minutes to single external IP
-- Destination: `185.220.101.45` — known Tor exit node
+- `171.251.232.40` → `/wp-login.php` → **1,595,492 bytes** — massive traffic volume
+- `171.251.232.40` → `/wp-corn.php?doing_wp_corn=t` — **backdoor file accessed**
+- `171.251.232.40` → `/wp-admin/` — WordPress admin panel access
+- `160.187.246.170` → `/boaform/admin/formLogin` — router exploit attempt
+
+![Web Traffic Exfiltration](hunt04-web-traffic-exfiltration.png)
 
 ---
-### Step 2 — Analyse Traffic to Suspicious IP
 
-**Wireshark filter:**
-```wireshark
-ip.dst == 185.220.101.45
-```
-
-**Findings:**
-- Traffic on port 4444 — non-standard, not HTTP/HTTPS
-- Encrypted payload — cannot inspect content
-- Continuous stream for 45 minutes
-- Packet size: consistent large packets = file transfer pattern
-
----
-### Step 3 — Identify Files Accessed Before Transfer
+### Step 2 — Identify Top Attacking IPs
 
 ```Splunk
-index=* EventCode=4663
-| eval transfer_start=strptime("14:47:00","%H:%M:%S")
-| where _time > transfer_start - 300
-| stats count by user, object_name
-| sort - count
+index=web-alert
+| rex field=_raw "(?<src_ip>\d+\.\d+\.\d+\.\d+)"
+| stats count by src_ip
+| sort -count
+| head 10
 ```
 
 **Findings:**
-- 847 file access events in 5 minutes before transfer
-- Files accessed: Documents, Desktop, Network shares
-- Pattern consistent with automated file collection
+- `171.251.232.40` — **340 requests** — primary attacker
+- `68.183.47.68` — 10 requests
+- `171.251.232.50` — 6 requests
+- `43.129.169.161` — 6 requests — login page scanning
+- Multiple IPs scanning for vulnerabilities
+
+![Top Attackers](hunt04-top-attackers.png)
 
 ---
 
-### Step 4 — DNS Analysis for C2 Staging
+### Step 3 — Detect Hydra Brute Force Tool
 
 ```Splunk
-index=network sourcetype=zeek_dns
-| stats count by query, answers
-| where count > 10
-| sort - count
+index=web-alert
+| search _raw="*wp-login*" OR _raw="*wp-admin*" OR _raw="*boaform*"
+| table _raw
+| head 20
 ```
 
 **Findings:**
-- DNS queries to `update-service.xyz` — 127 times in 4 hours
-- Short TTL responses — fast-flux DNS = evasion technique
-- Domain registered 3 days before the attack — newly registered = suspicious
+- User agent `Mozilla/5.0 (Hydra)` detected — **Hydra password cracker**
+- `171.251.232.40` using Hydra against `/wp-login.php`
+- POST and GET requests in rapid succession — automated attack
+- Status 200 responses — attack reaching the login page successfully
+- Timestamp: `14/Sep/2025 21:20:34` — all same second = automated
+
+![Hydra WordPress Attack](hunt04-hydra-wordpress-attack.png)
+
+---
+
+### Step 4 — Full Attack Summary
+
+```Splunk
+index=web-alert
+| rex field=_raw "(?<src_ip>\d+\.\d+\.\d+\.\d+).*\"(?<method>\w+) (?<url>\S+).*\" (?<status>\d+) (?<bytes>\d+).*\"(?<useragent>[^\"]+)\"$"
+| stats count by src_ip, url, useragent
+| sort -count
+| head 15
+```
+
+**Findings:**
+- `171.251.232.40` → `/wp-login.php` → **316 requests** using Hydra
+- `43.129.169.161` → `/Core/Skin/Login.aspx` — ASP.NET login scanning
+- `171.251.232.40` → `/wp-corn.php` — backdoor persistence file
+- `160.187.246.170` → `/boaform/admin/formLogin` — IoT/router exploit
+- `167.94.145.108` → `/` — CensysInspect scanner — reconnaissance
+
+![Full Attack Summary](hunt04-full-attack-summary.png)
 
 ---
 
@@ -94,76 +111,73 @@ index=network sourcetype=zeek_dns
 
 | Type | Value | Context |
 |---|---|---|
-| Destination IP | 185.220.101.45 | Tor exit node — C2 |
-| Port | TCP/4444 | Non-standard exfil port |
-| Data Volume | 2.3GB | Exfiltrated data estimate |
-| C2 Domain | update-service.xyz | Fast-flux DNS |
-| Domain Age | 3 days old | Newly registered |
-| Duration | 45 minutes | Exfil timeframe |
+| Attacker IP | 171.251.232.40 | Primary — 340 requests via Hydra |
+| Attacker IP | 160.187.246.170 | Router exploit attempts |
+| Attacker IP | 43.129.169.161 | ASP.NET login scanning |
+| Attacker IP | 167.94.145.108 | CensysInspect reconnaissance |
+| Attack Tool | Mozilla/5.0 (Hydra) | Password brute force tool |
+| Target URL | /wp-login.php | WordPress login — 316 hits |
+| Backdoor URL | /wp-corn.php | Fake cron — persistence file |
+| Target URL | /boaform/admin/formLogin | Router/IoT exploit |
+| Data Volume | 1,595,492 bytes | Total from /wp-login.php |
+| Timestamp | 2025-09-14 21:20:34 | Attack timestamp |
 
 ---
-
-## Wireshark Analysis — Key Filters
-
-```Wireshark
-# Show only exfil traffic
-ip.dst == 185.220.101.45 && tcp.port == 4444
-
-# Show data volume
-Statistics → Conversations → TCP tab
-→ Sort by bytes to find the heaviest flows
-
-# Check for unencrypted content
-tcp.port == 4444 && data
-→ Follow TCP stream to inspect
-
-# Show all non-standard port traffic
-not tcp.port in {80, 443, 53, 25, 22}
-  && ip.dst != 192.168.0.0/16
-
-# DNS to suspicious domains
-dns.qry.name contains "update-service"
-```
 
 ## MITRE ATT&CK Mapping
 
 | Technique | ID | Evidence |
 |---|---|---|
-| Exfiltration Over C2 Channel | T1041 | 2.3GB to C2 IP |
-| Data from Local System | T1005 | 847 file access events |
-| Archive Collected Data | T1560 | Likely compressed before transfer |
-| DNS Resolution | T1071.004 | Fast-flux DNS C2 staging |
+| Exploit Public-Facing Application | T1190 | WordPress login brute force |
+| Brute Force | T1110 | 316 requests via Hydra tool |
+| Server Software Component: Web Shell | T1505.003 | /wp-corn.php backdoor file |
+| Active Scanning | T1595 | CensysInspect reconnaissance |
+| Valid Accounts | T1078 | Admin panel access after brute force |
 
 ---
+
 ## Detection Rules
 
-### Splunk — Large Outbound Transfer
+### Splunk — Hydra Detection
 ```Splunk
-index=network sourcetype=zeek_conn
-| stats sum(orig_bytes) as total_bytes by 
-        id.orig_h, id.resp_h, id.resp_p
-| eval total_mb = total_bytes/1024/1024
-| where total_mb > 100 
-  AND id.resp_p NOT IN (80, 443, 25, 53)
-| eval alert="Large outbound transfer on 
-             non-standard port"
+index=web-alert
+| search _raw="*Hydra*"
+| rex field=_raw "(?<src_ip>\d+\.\d+\.\d+\.\d+)"
+| stats count by src_ip
+| where count > 10
+| eval alert="Hydra brute force tool detected"
 ```
-### Splunk — Newly Registered Domain Alert
+
+### Splunk — High Request Rate Alert
 ```Splunk
-index=network sourcetype=zeek_dns
-| rex field=query 
-    "(?<tld>[^.]+\.[^.]+$)"
-| lookup domain_age_lookup tld 
-    OUTPUT age_days
-| where age_days < 30
-| table _time, query, age_days
+index=web-alert
+| rex field=_raw "(?<src_ip>\d+\.\d+\.\d+\.\d+)"
+| bucket _time span=1m
+| stats count by _time, src_ip
+| where count > 50
+| eval alert="High request rate — possible brute force"
+```
+
+### Wazuh Custom Rule
+```xml
+<rule id="100040" level="12">
+  <if_sid>31106</if_sid>
+  <url>/wp-login.php</url>
+  <same_source_ip/>
+  <description>WordPress brute force attack detected</description>
+  <mitre>
+    <id>T1110</id>
+  </mitre>
+</rule>
 ```
 
 ---
+
 ## Recommendations
 
-1. Block outbound traffic on non-standard ports at the front firewall
-2. Implement DLP (Data Loss Prevention) on sensitive file shares
-3. Alert on any single host transferring > 500MB outbound in 1 hour
-4. Subscribe to domain age threat feeds — block newly registered domains
-5. Deploy network traffic baseline monitoring (Zeek + ML anomaly detection)
+1. Block IP `171.251.232.40` at WAF/firewall immediately
+2. Implement rate limiting on `/wp-login.php` — max 5 attempts per minute
+3. Deploy Web Application Firewall (WAF) to block known attack tools
+4. Remove or rename `/wp-corn.php` — investigate for backdoor
+5. Enable WordPress login lockout plugin
+6. Monitor for `Hydra` user agent string in all web logs
