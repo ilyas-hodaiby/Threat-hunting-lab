@@ -2,7 +2,7 @@
 
 **Tools:** Volatility · KAPE · Windows Event Logs  
 **Analyst:** Ilyas Hodaiby  
-**Status:** Complete ✅
+**Status:** ✅ Complete — Memory forensics evidence captured
 
 ---
 
@@ -12,31 +12,43 @@ This module covers basic digital forensics techniques applied during threat hunt
 
 ---
 
+## Evidence — Volatility Memory Analysis
+
+### 1. Process list — running processes at time of compromise
+![Volatility pslist](volatility-pslist.png)
+
+### 2. Command line arguments — reader_sl.exe (Cridex malware) confirmed
+![Volatility cmdline](volatility-cmdline.png)
+
+### 3. Malfind — injected code detected in explorer.exe (PID 1484) and reader_sl.exe (PID 1640)
+![Volatility malfind](volatility-malfind.png)
+
+**Key finding:** PID 1640 `reader_sl.exe` flagged with `PAGE_EXECUTE_READWRITE` + MZ header — confirms Cridex malware injection in memory. Classic process injection technique (T1055).
+
+---
+
 ## Memory Analysis with Volatility
 
 ### Key Commands
 
 ```bash
-# Identify OS profile
-vol -f memory.dmp windows.info
+# Identify OS info
+python3 vol.py -f memory.dmp windows.info
 
 # List running processes
-vol -f memory.dmp windows.pslist
+python3 vol.py -f memory.dmp windows.pslist
 
 # Detect hidden processes
-vol -f memory.dmp windows.psscan
+python3 vol.py -f memory.dmp windows.psscan
 
 # Process tree
-vol -f memory.dmp windows.pstree
-
-# Network connections
-vol -f memory.dmp windows.netstat
+python3 vol.py -f memory.dmp windows.pstree
 
 # Detect injected code
-vol -f memory.dmp windows.malfind
+python3 vol.py -f memory.dmp windows.malfind
 
 # Command history
-vol -f memory.dmp windows.cmdline
+python3 vol.py -f memory.dmp windows.cmdline
 ```
 
 ---
@@ -71,19 +83,23 @@ kape.exe --tsource C: --tdest C:\output
 ## Key Forensic Locations
 
 ### Persistence Evidence
+```
 HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
 HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
 C:\Windows\System32\Tasks\
+```
 
 ### Execution Evidence
-Prefetch: C:\Windows\Prefetch*.pf
+```
+Prefetch: C:\Windows\Prefetch\*.pf
 Amcache: C:\Windows\AppCompat\Programs\Amcache.hve
+```
 
 ---
 
 ## Findings from Lab Investigation
 
-During the threat hunting investigation (Modules 1-5), forensic analysis revealed:
+During the threat hunting investigation (Modules 1–5), forensic analysis revealed:
 
 | Finding | Evidence | Significance |
 |---|---|---|
@@ -93,6 +109,7 @@ During the threat hunting investigation (Modules 1-5), forensic analysis reveale
 | C2 backdoor | wp-corn.php POST requests | C2 channel established |
 | Attack tool | Mozilla/5.0 (Hydra) user agent | Automated attack confirmed |
 | Registry modification | Sysmon EventID 13 — 1,143 events | Stealthy persistence attempt |
+| **Cridex malware** | **reader_sl.exe PID 1640 — malfind** | **Process injection confirmed** |
 
 ---
 
@@ -103,10 +120,13 @@ During the threat hunting investigation (Modules 1-5), forensic analysis reveale
 | win-alert logs | SHA256: collected via Splunk | 2025-09-14 | Ilyas Hodaiby |
 | web-alert logs | SHA256: collected via Splunk | 2025-09-14 | Ilyas Hodaiby |
 | Sysmon EventID logs | SHA256: collected via Splunk | 2025-05-11 | Ilyas Hodaiby |
+| Investigation-1.vmem | SHA256: memory dump | 2025-06-10 | Ilyas Hodaiby |
 
 ---
 
 ## Timeline Reconstruction
+
+```
 2022-05-11 22:32:18  →  Cybertees\James creates A1berto via WMIC
 2025-08-30 09:50:02  →  Brute force starts against oliver.thompson
 2025-08-30 09:50:24  →  oliver.thompson compromised
@@ -115,6 +135,8 @@ During the threat hunting investigation (Modules 1-5), forensic analysis reveale
 2025-09-14 21:20:34  →  316 requests in 60 seconds
 2025-09-14 21:26:28  →  C2 established via wp-corn.php
 2025-09-14 22:04:01  →  C2 beaconing every ~6 seconds
+2025-06-10 14:00:00  →  Memory forensics: Cridex injection confirmed in reader_sl.exe
+```
 
 ---
 
@@ -131,7 +153,7 @@ Key lesson: **Log analysis alone is not enough.** Memory forensics reveals injec
 | Technique | ID | Forensic Evidence |
 |-----------|-----|-------------------|
 | OS Credential Dumping | T1003 | malfind — LSASS memory access |
-| Process Injection | T1055 | VirtualAllocEx in memory |
+| Process Injection | T1055 | PAGE_EXECUTE_READWRITE + MZ header — reader_sl.exe |
 | Lateral Movement | T1021 | EventCode 4624 LogonType 3 |
 | Persistence | T1547.001 | Registry Run key modification |
 | Web Shell | T1505.003 | wp-corn.php artefact |
