@@ -18,12 +18,9 @@ This module correlates IOCs discovered during the 5 threat hunts against threat 
 
 | IP | Country | ASN | Reputation | Source |
 |----|---------|-----|------------|--------|
-| 10.10.157.155 | Internal | — | Attacker pivot | Hunt 01/03 |
-| 171.251.232.40 | Vietnam | AS45899 | Malicious — Hydra attacks | VirusTotal |
-| 68.183.47.68 | US | AS14061 DigitalOcean | VPS — C2 hosting | AbuseIPDB |
-| 160.187.246.170 | South Korea | AS4766 | Scanner — IoT exploits | Shodan |
-| 167.94.145.108 | US | AS398705 | CensysInspect scanner | Censys |
-
+| 171.251.232.40 | Vietnam 🇻🇳 | AS7552 Viettel | 1/91 Malicious | VirusTotal |
+| 68.183.47.68 | UK 🇬🇧 | AS14061 DigitalOcean | 42 reports | AbuseIPDB |
+| 160.187.246.170 | Vietnam 🇻🇳 | AS150862 | 15 open ports | Shodan |
 
 ![VirusTotal 171.251.232.40](module5-vt-171.251.232.40.png)
 
