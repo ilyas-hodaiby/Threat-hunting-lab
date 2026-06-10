@@ -1,9 +1,76 @@
-Tools: ElastAlert · TheHive · Cortex
-Analyst: Ilyas Hodaiby
-Status:
+# Module 3 — Digital Forensics
 
-Overview
-This module documents the full SOAR pipeline — from alert detection in Splunk through to automated case management and IOC enrichment in TheHive/Cortex. The workflow eliminates manual steps between detection and investigation, reducing mean time to respond.
+**Tools:** Volatility · KAPE · Windows Event Logs  
+**Analyst:** Ilyas Hodaiby  
+**Status:** Complete ✅
 
-This directly mirrors the SOAR workflow I operated during my time as a Junior SOC Analyst, where TheHive and Cortex were used daily for case management and automated IOC analysis.
+---
 
+## Overview
+
+This module covers basic digital forensics 
+techniques applied during threat hunting 
+investigations — memory analysis, endpoint 
+artefact collection, and evidence documentation.
+
+---
+
+## Memory Analysis with Volatility
+
+### Key Commands
+
+```bash
+# Identify OS profile
+vol -f memory.dmp windows.info
+
+# List running processes
+vol -f memory.dmp windows.pslist
+
+# Detect hidden processes
+vol -f memory.dmp windows.psscan
+
+# Process tree
+vol -f memory.dmp windows.pstree
+
+# Network connections
+vol -f memory.dmp windows.netstat
+
+# Detect injected code
+vol -f memory.dmp windows.malfind
+
+# Command history
+vol -f memory.dmp windows.cmdline
+```
+
+---
+
+## Suspicious Process Patterns
+
+| Legitimate | Malicious | Why Suspicious |
+|---|---|---|
+| svchost.exe → services.exe | svchost.exe → cmd.exe | Wrong parent |
+| explorer.exe → user apps | explorer.exe → powershell | Unexpected child |
+| lsass.exe (1 instance) | lsass.exe (2 instances) | Duplicated |
+| taskmgr.exe → user | taskhost.exe in temp | Wrong path |
+
+---
+
+## Endpoint Artefact Collection — KAPE
+
+```bash
+kape.exe --tsource C: --tdest C:\output 
+  --target !SANS_Triage
+```
+
+**Key artefacts collected:**
+- Windows Event Logs (EVTX)
+- Registry hives (SAM, SYSTEM, SOFTWARE)
+- Prefetch files (execution evidence)
+- Scheduled tasks
+- Amcache (program execution)
+
+---
+
+## Key Forensic Locations
+
+### Persistence Evidence
