@@ -142,7 +142,7 @@ During the threat hunting investigation (Modules 1–5), forensic analysis revea
 
 ## SOC Context
 
-From my 1.5 years experience as SOC Analyst at Dataprotect, memory forensics was used during critical incidents to understand the full scope of compromise. This module documents the same techniques applied to the lab environment — confirming findings from the threat hunting modules and providing definitive evidence of attacker activity.
+From my 1.5 years experience , memory forensics was used during critical incidents to understand the full scope of compromise. This module documents the same techniques applied to the lab environment — confirming findings from the threat hunting modules and providing definitive evidence of attacker activity.
 
 Key lesson: **Log analysis alone is not enough.** Memory forensics reveals injected code, hidden processes, and network connections that logs may miss. Combining Splunk log analysis with Volatility memory analysis gives complete visibility.
 
