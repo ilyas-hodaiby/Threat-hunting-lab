@@ -4,7 +4,6 @@
 
 [![TryHackMe](https://img.shields.io/badge/TryHackMe-Top%206%25-red)](https://tryhackme.com/p/ilyas.ho)
 [![SOC Homelab](https://img.shields.io/badge/SOC-Homelab-blue)](https://github.com/ilyas-hodaiby/soc-homelab)
-[![View Project](https://img.shields.io/badge/View-Project-green)](https://github.com/ilyas-hodaiby/Threat-hunting-lab)
 [![MITRE ATT&CK](https://img.shields.io/badge/MITRE%20ATT%26CK-Mapped-orange)](https://attack.mitre.org/)
 
 ---
@@ -23,26 +22,8 @@ This project documents a complete SOC pipeline from threat hunting through to in
 ---
 
 ## 🏗️ Lab Architecture
-┌─────────────────────────────────────────────────────────┐
-│                    LAB ENVIRONMENT                       │
-│                                                         │
-│  ┌──────────┐  attack  ┌──────────────────────────┐    │
-│  │  Kali    │─────────►│  Ubuntu 22.04            │    │
-│  │  Linux   │          │  Wazuh Agent             │    │
-│  └──────────┘          └────────────┬─────────────┘    │
-│                                     │ logs              │
-│                                     ▼                   │
-│                    ┌────────────────────────────┐       │
-│                    │   Splunk Enterprise         │       │
-│                    │   Log analysis + Hunting    │       │
-│                    └──────────────┬─────────────┘       │
-│                                   │ alert               │
-│                                   ▼                     │
-│              ┌────────────────────────────────────┐     │
-│              │  SOAR Pipeline                      │     │
-│              │  ElastAlert → TheHive → Cortex      │     │
-│              └────────────────────────────────────┘     │
-└─────────────────────────────────────────────────────────┘
+
+![SOC Architecture](soc-architecture.png)
 
 ---
 
@@ -61,54 +42,18 @@ This project documents a complete SOC pipeline from threat hunting through to in
 
 ## 📂 Repository Structure
 Threat-hunting-lab/
-│
-├── README.md
-│
-├── hunt 01/                          ← Lateral Movement
-│   ├── README.md
-│   └── screenshots/
-│
-├── Hunt02/                           ← Persistence
-│   ├── README.md
-│   └── screenshots/
-│
-├── Hunt03/                           ← Credential Access
-│   ├── README.md
-│   └── screenshots/
-│
-├── Hunt04/                           ← Web Attack & Exfiltration
-│   ├── README.md
-│   └── screenshots/
-│
-├── Hunt 05/                          ← C2 Detection
-│   ├── README.md
-│   └── screenshots/
-│
-├── Module 2 soar/                    ← SOAR Automation
-│   └── README.md
-│
-├── Module 3/                         ← Digital Forensics
-│   └── README.md (Volatility + KAPE)
-│
-├── module-4-malware-analysis/        ← Malware Analysis
-│   └── README.md (YARA + PEStudio)
-│
-├── module-5-threat-intelligence/     ← Threat Intelligence
-│   ├── README.md
-│   └── screenshots/ (VirusTotal, AbuseIPDB, Shodan)
-│
-├── module-6-ir-report/               ← Incident Response
-│   └── full-ir-report.md
-│
-├── automation/                       ← Python Automation
-│   ├── ioc_enricher.py
-│   ├── log_parser.py
-│   ├── soar_lite.py
-│   ├── yara_scanner.py
-│   └── requirements.txt
-│
-└── datasets/                         ← Dataset sources
-└── dataset-sources.md
+├── hunt 01/                     ← Lateral Movement
+├── Hunt02/                      ← Persistence
+├── Hunt03/                      ← Credential Access
+├── Hunt04/                      ← Web Attack & Exfiltration
+├── Hunt 05/                     ← C2 Detection
+├── Module 2 soar/               ← SOAR Automation
+├── Module 3/                    ← Digital Forensics
+├── module-4-malware-analysis/   ← Malware Analysis
+├── module-5-threat-intelligence/← Threat Intelligence
+├── module-6-ir-report/          ← Incident Response
+├── automation/                  ← Python Scripts
+└── datasets/                    ← Dataset sources
 
 ---
 
@@ -116,7 +61,7 @@ Threat-hunting-lab/
 
 ### Hunt 01 — Lateral Movement
 **MITRE:** T1550.002 Pass the Hash
-- Detected `10.10.157.155` authenticating to `WIN-H015` via LogonType 3
+- `10.10.157.155` authenticating to `WIN-H015` via LogonType 3
 - 49 total authentication events analysed
 - Burst pattern: 13 logins in 30 seconds
 
@@ -134,7 +79,7 @@ Threat-hunting-lab/
 
 ### Hunt 04 — Web Attack & Exfiltration
 **MITRE:** T1190, T1110
-- Hydra tool detected via user agent
+- Hydra tool detected via user agent string
 - 316 requests to `/wp-login.php`
 - 1.5MB data transferred
 - Backdoor `/wp-corn.php` installed
@@ -143,7 +88,7 @@ Threat-hunting-lab/
 **MITRE:** T1071.001, T1505.003
 - 331 request spike at 21:20 PM
 - C2 beaconing every ~6 seconds via `/wp-corn.php`
-- Attacker IP: `171.251.232.40` (Vietnam, Viettel Group)
+- Attacker IP: `171.251.232.40` — Vietnam, Viettel Group
 
 ---
 
@@ -174,6 +119,8 @@ Threat-hunting-lab/
 
 ## 📜 Certifications
 
+- ✅ ISC2 CC — 2026
+- ✅ TryHackMe Top 6% globally
 - ✅ TryHackMe SOC Level 1
 - ✅ TryHackMe Threat Hunting
 - ✅ Cisco Cybersecurity Essentials
@@ -185,9 +132,9 @@ Threat-hunting-lab/
 
 **Ilyas Hodaiby** | Junior SOC Analyst → N2 Level
 
-1.5 years SOC experience at Dataprotect Morocco — 24/7 SOC environment, 50+ alerts/day, tools: QRadar, ArcSight, ELK, Wazuh,Splunk, TheHive, MISP, Cortex.
+1.5 years SOC experience at Dataprotect Morocco — 24/7 SOC, 50+ alerts/day — QRadar, ArcSight, ELK, Wazuh, Splunk, TheHive, MISP, Cortex.
 
-Currently completing MSc Computer Science at Ulster University London.
+MSc Computer Science — Ulster University London.
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue)](https://linkedin.com/in/ilyas-hodaiby-7216a3238)
 [![TryHackMe](https://img.shields.io/badge/TryHackMe-Top%206%25-red)](https://tryhackme.com/p/ilyas.ho)
