@@ -88,7 +88,7 @@ Hands-on case management performed in TheHive, based on real IOCs detected durin
 ![TheHive case tasks](thehive-case-tasks.png)
 
 ### 4. Observables — IOCs flagged and defanged
-![TheHive case observables](thehive-case-observables.png)
+![TheHive case observabless](thehive-case-observabless.png)
 
 ---
 
