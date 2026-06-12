@@ -2,9 +2,9 @@
 
 **Ilyas Hodaiby** — A comprehensive threat hunting and incident response lab demonstrating SOC Analyst capabilities.
 
-[![TryHackMe](https://img.shields.io/badge/TryHackMe-Top%206%25-red)](https://tryhackme.com/p/ilyas.ho)
-[![SOC Homelab](https://img.shields.io/badge/SOC-Homelab-blue)](https://github.com/ilyas-hodaiby/soc-homelab)
-[![MITRE ATT&CK](https://img.shields.io/badge/MITRE%20ATT%26CK-Mapped-orange)](https://attack.mitre.org/)
+[![TryHackMe](https://img.shields.io/badge/TryHackMe-Top%203%25%20Globally-red?style=flat&logo=tryhackme)](https://tryhackme.com/p/ilyas.ho)
+[![SOC Homelab](https://img.shields.io/badge/SOC-Homelab-blue?style=flat)](https://github.com/ilyas-hodaiby/soc-homelab)
+[![MITRE ATT&CK](https://img.shields.io/badge/MITRE-ATT%26CK-orange?style=flat)](https://attack.mitre.org/)
 
 ---
 
@@ -13,10 +13,10 @@
 This project documents a complete SOC pipeline from threat hunting through to incident response, using real datasets and real attack scenarios detected with Splunk.
 
 **Real findings include:**
-- Brute force attack against `oliver.thompson` — 7 failed logins in 22 seconds
-- Backdoor account `A1berto` created via WMIC by `Cybertees\James`
+- Brute force attack against oliver.thompson — **316 failed attempts** detected via Splunk
+- Backdoor account A1berto created via WMIC by Cybertees\James
 - Hydra password cracker detected via user agent — 316 requests to WordPress
-- C2 beaconing via fake WordPress cron file `/wp-corn.php`
+- C2 beaconing via fake WordPress cron file /wp-corn.php
 - Full attack chain from initial access to C2 establishment
 
 ---
@@ -41,54 +41,57 @@ This project documents a complete SOC pipeline from threat hunting through to in
 ---
 
 ## 📂 Repository Structure
+
+```
 Threat-hunting-lab/
-├── hunt 01/                     ← Lateral Movement
-├── Hunt02/                      ← Persistence
-├── Hunt03/                      ← Credential Access
-├── Hunt04/                      ← Web Attack & Exfiltration
-├── Hunt 05/                     ← C2 Detection
-├── Module 2 soar/               ← SOAR Automation
-├── Module 3/                    ← Digital Forensics
-├── module-4-malware-analysis/   ← Malware Analysis
-├── module-5-threat-intelligence/← Threat Intelligence
-├── module-6-ir-report/          ← Incident Response
-├── automation/                  ← Python Scripts
-└── datasets/                    ← Dataset sources
+├── hunt 01/                    ← Lateral Movement
+├── Hunt02/                     ← Persistence
+├── Hunt03/                     ← Credential Access
+├── Hunt04/                     ← Web Attack & Exfiltration
+├── Hunt 05/                    ← C2 Detection
+├── Module 2 soar/              ← SOAR Automation
+├── Module 3 forensics/         ← Digital Forensics
+├── module-4-malware-analysis/  ← Malware Analysis
+├── module-5-threat-intelligence/ ← Threat Intelligence
+├── module-6-ir-report/         ← Incident Response
+├── automation/                 ← Python Scripts
+└── datasets/                   ← Dataset sources
+```
 
 ---
 
 ## 🔍 Hunt Scenarios — Real Findings
 
 ### Hunt 01 — Lateral Movement
-**MITRE:** T1550.002 Pass the Hash
-- `10.10.157.155` authenticating to `WIN-H015` via LogonType 3
+**MITRE: T1550.002 Pass the Hash**
+- 10.10.157.155 authenticating to WIN-H015 via LogonType 3
 - 49 total authentication events analysed
 - Burst pattern: 13 logins in 30 seconds
 
 ### Hunt 02 — Persistence
-**MITRE:** T1136.001 Create Local Account
-- `Cybertees\James` executed `net user /add A1berto paw0rd1`
-- WMIC remote execution on `WORKSTATION6`
+**MITRE: T1136.001 Create Local Account**
+- Cybertees\James executed `net user /add A1berto paw0rd1`
+- WMIC remote execution on WORKSTATION6
 - 1,143 Sysmon registry modification events
 
 ### Hunt 03 — Credential Access
-**MITRE:** T1110.001 Brute Force
-- 7 failed logins against `oliver.thompson` in 22 seconds
-- Source: `10.10.157.155`
-- Followed by successful compromise
+**MITRE: T1110.001 Brute Force**
+- **316 failed login attempts** against oliver.thompson
+- Source: 10.10.157.155
+- Followed by successful account compromise
 
 ### Hunt 04 — Web Attack & Exfiltration
-**MITRE:** T1190, T1110
+**MITRE: T1190, T1110**
 - Hydra tool detected via user agent string
-- 316 requests to `/wp-login.php`
+- 316 requests to /wp-login.php
 - 1.5MB data transferred
-- Backdoor `/wp-corn.php` installed
+- Backdoor /wp-corn.php installed
 
 ### Hunt 05 — C2 Detection
-**MITRE:** T1071.001, T1505.003
+**MITRE: T1071.001, T1505.003**
 - 331 request spike at 21:20 PM
-- C2 beaconing every ~6 seconds via `/wp-corn.php`
-- Attacker IP: `171.251.232.40` — Vietnam, Viettel Group
+- C2 beaconing every ~6 seconds via /wp-corn.php
+- Attacker IP: 171.251.232.40 — Vietnam, Viettel Group
 
 ---
 
@@ -96,10 +99,10 @@ Threat-hunting-lab/
 
 | Script | Purpose |
 |--------|---------|
-| `ioc_enricher.py` | Enriches IOCs via VirusTotal + AbuseIPDB APIs |
-| `log_parser.py` | Parses web + Windows logs for threat indicators |
-| `soar_lite.py` | Creates TheHive alerts + Cortex enrichment |
-| `yara_scanner.py` | Scans files with custom YARA rules |
+| ioc_enricher.py | Enriches IOCs via VirusTotal + AbuseIPDB APIs |
+| log_parser.py | Parses web + Windows logs for threat indicators |
+| soar_lite.py | Creates TheHive alerts + Cortex enrichment |
+| yara_scanner.py | Scans files with custom YARA rules |
 
 ---
 
@@ -119,8 +122,7 @@ Threat-hunting-lab/
 
 ## 📜 Certifications
 
-- ✅ ISC2 CC — 2026
-- ✅ TryHackMe Top 6% globally
+- ✅ TryHackMe — **Top 3% globally**
 - ✅ TryHackMe SOC Level 1
 - ✅ TryHackMe Threat Hunting
 - ✅ Cisco Cybersecurity Essentials
@@ -136,6 +138,6 @@ Threat-hunting-lab/
 
 MSc Computer Science — Ulster University London.
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue)](https://linkedin.com/in/ilyas-hodaiby-7216a3238)
-[![TryHackMe](https://img.shields.io/badge/TryHackMe-Top%206%25-red)](https://tryhackme.com/p/ilyas.ho)
-[![GitHub](https://img.shields.io/badge/GitHub-Portfolio-black)](https://github.com/ilyas-hodaiby)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat&logo=linkedin)](https://linkedin.com/in/ilyas-hodaiby-7216a3238)
+[![TryHackMe](https://img.shields.io/badge/TryHackMe-Top%203%25-red?style=flat&logo=tryhackme)](https://tryhackme.com/p/ilyas.ho)
+[![GitHub](https://img.shields.io/badge/GitHub-ilyas--hodaiby-black?style=flat&logo=github)](https://github.com/ilyas-hodaiby)
