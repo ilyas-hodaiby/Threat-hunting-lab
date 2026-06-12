@@ -132,7 +132,7 @@ Threat-hunting-lab/
 
 ## 👤 About
 
-**Ilyas Hodaiby** | Junior SOC Analyst → N2 Level
+**Ilyas Hodaiby** | Junior SOC Analyst
 
 1.5 years SOC experience at Dataprotect Morocco — 24/7 SOC, 50+ alerts/day — QRadar, ArcSight, ELK, Wazuh, Splunk, TheHive, MISP, Cortex.
 
